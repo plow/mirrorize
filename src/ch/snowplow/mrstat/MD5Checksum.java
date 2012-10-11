@@ -2,23 +2,33 @@ package ch.snowplow.mrstat;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class MD5Checksum {
 
 	
-	public static byte[] createChecksum(String filename) throws Exception {
+	public static byte[] createChecksum(String filename) throws IOException {
 		InputStream fis =  new FileInputStream(filename);
 
 		byte[] buffer = new byte[1024];
-		MessageDigest complete = MessageDigest.getInstance("MD5");
+		MessageDigest complete = null;
+		try {
+			complete = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		int numRead;
 
 		do {
 			numRead = fis.read(buffer);
 			if (numRead > 0) {
-				complete.update(buffer, 0, numRead);
+				if(complete != null)
+					complete.update(buffer, 0, numRead);
 			}
 		} while (numRead != -1);
 
@@ -28,7 +38,7 @@ public class MD5Checksum {
 
    // see this How-to for a faster way to convert
    // a byte array to a HEX string
-   public static String getMD5Checksum(String filename) throws Exception {
+   public static String getMD5Checksum(String filename) throws IOException {
        byte[] b = createChecksum(filename);
        String result = "";
 
@@ -36,20 +46,6 @@ public class MD5Checksum {
            result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring(1);
        }
        return result;
-   }
-   
-   public static String dirTraverse(File folder, int depth) {
-	   File[] listOfFiles = folder.listFiles();
-		
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isFile()) {
-				return depth + " File " + listOfFiles[i].getName();
-			} 
-			else if (listOfFiles[i].isDirectory()) {
-				return depth + " Directory " + listOfFiles[i].getName();
-			}
-		}
-		return "error"; // TODO fix
    }
 
    public static void main(String args[]) {
@@ -74,25 +70,16 @@ public class MD5Checksum {
     	   
     	   System.out.println("------------------");
     	   System.out.println("Tree root 1: " + args[0]);
+    	   File tree1Root = new File(args[0]);
+    	   dirTraverse(tree1Root, 0);
+			
+    	   System.out.println("------------------");
     	   System.out.println("Tree root 2: " + args[1]);
-    	   
-			File tree1Root = new File(args[0]);
-			File tree2Root = new File(args[1]);
+    	   File tree2Root = new File(args[1]);
+    	   dirTraverse(tree2Root, 0);
 			
-			System.out.println(dirTraverse(tree1Root, 0));
-			System.out.println(dirTraverse(tree2Root, 0));
-			
-			System.out.println("------------------");	
+    	   System.out.println("------------------");	
     	   
-    	   
-    	   
-    	   for(int i=0; i<10000; i++) {
-    		   if(i%1000==0)
-    			   System.out.println("MD5: " + getMD5Checksum("resources/tree1/file1.txt"));
-    		   else
-    			   getMD5Checksum("resources/tree1/file1.txt");
-    			   
-    	   }
            // output :
            //  0bb2827c5eacf570b6064e24e0e6653b
            // ref :
@@ -104,6 +91,31 @@ public class MD5Checksum {
        catch (Exception e) {
     	   e.printStackTrace();
        }
+   }
+   
+   public static void dirTraverse(File folder, int depth) {
+	   File[] listOfFiles = folder.listFiles();
+		
+		for (int i = 0; i < listOfFiles.length; i++) {
+			if (listOfFiles[i].isDirectory()) {
+				System.out.println(getSpaces(depth*2) + listOfFiles[i].getName() + "(D)");
+				dirTraverse(listOfFiles[i], depth+1);
+			}
+			else if (listOfFiles[i].isFile()) {
+				try {
+					System.out.println(getSpaces(depth*2) + listOfFiles[i].getName() + "  (MD5:" + getMD5Checksum(listOfFiles[i].getPath()) + ")");
+				} catch (IOException e) {
+					System.err.println("The following I/O exception raised: " + e.getMessage());
+				}
+			} 
+			else
+				return; // TODO fix
+		}
+		
+   }
+   
+   public static String getSpaces(int n) {
+	   return new String(new char[n]).replace('\0', ' ');
    }
    
 }
