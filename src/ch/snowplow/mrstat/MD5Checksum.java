@@ -79,8 +79,8 @@ public class MD5Checksum {
 			File tree1Root = new File(args[0]);
 			File tree2Root = new File(args[1]);
 			
-			dirTraverse(tree1Root, 0);
-			dirTraverse(tree2Root, 0);
+			System.out.println(dirTraverse(tree1Root, 0));
+			System.out.println(dirTraverse(tree2Root, 0));
 			
 			System.out.println("------------------");	
     	   
@@ -88,9 +88,9 @@ public class MD5Checksum {
     	   
     	   for(int i=0; i<10000; i++) {
     		   if(i%1000==0)
-    			   System.out.println("MD5: " + getMD5Checksum("resources/test.txt"));
+    			   System.out.println("MD5: " + getMD5Checksum("resources/tree1/file1.txt"));
     		   else
-    			   getMD5Checksum("resources/test.txt");
+    			   getMD5Checksum("resources/tree1/file1.txt");
     			   
     	   }
            // output :
