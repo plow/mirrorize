@@ -5,4 +5,4 @@
  * @author sf
  *
  */
-package ch.snowplow.mrstat;
+package ch.snowplow.mirrorize;
