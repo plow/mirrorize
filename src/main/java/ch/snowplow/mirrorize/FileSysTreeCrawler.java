@@ -57,13 +57,14 @@ public class FileSysTreeCrawler {
 		byte[] b = createChecksum(filename);
 		String result = "";
 
-		// Converts the byte array containing the MD5 checksum to a hex string.
+		// Converts the byte array containing the MD5 checksum to a hex
 		for (int i = 0; i < b.length; i++) {
 			// TODO: don't do this conversion -> make a MD5 class -> toString()
 			// returns hex string
 			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
 		}
 		return result;
+		// return new String(b);
 	}
 
 	public static void main(String args[]) {
@@ -75,6 +76,8 @@ public class FileSysTreeCrawler {
 					.println("Usage: MD5Checksum /path/to/dir1 /path/to/dir2");
 			System.exit(0);
 		}
+
+		// "Hello world!" -> 86fb269d190d2c85f6e0468ceca42a20
 
 		try {
 
