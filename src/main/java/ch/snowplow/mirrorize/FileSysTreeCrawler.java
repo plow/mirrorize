@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -61,10 +62,37 @@ public class FileSysTreeCrawler {
 		for (int i = 0; i < b.length; i++) {
 			// TODO: don't do this conversion -> make a MD5 class -> toString()
 			// returns hex string
+			// TODO: use string buffer
 			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
 		}
 		return result;
 		// return new String(b);
+	}
+
+	public static String getMD5OfString(String s) {
+		byte[] bytesOfMessage;
+		MessageDigest md;
+		String result = "";
+		try {
+			bytesOfMessage = s.getBytes("UTF-8");
+			md = MessageDigest.getInstance("MD5");
+			byte[] b = md.digest(bytesOfMessage);
+
+			// Converts the byte array containing the MD5 checksum to a hex
+			for (int i = 0; i < b.length; i++) {
+				// TODO: don't do this conversion -> make a MD5 class ->
+				// toString()
+				// returns hex string
+				// TODO: use string buffer
+				result += Integer.toString((b[i] & 0xff) + 0x100, 16)
+						.substring(1);
+			}
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	public static void main(String args[]) {
@@ -93,14 +121,21 @@ public class FileSysTreeCrawler {
 			 * per folder, for folders per folder, and for filesizes, depth)
 			 */
 
+			DirHashMap<String> hashesTree1 = new DirHashMap<String>();
+			DirHashMap<String> hashesTree2 = new DirHashMap<String>();
+
 			System.out.println("------------------");
 			System.out.println("Tree root 1: " + args[0]);
 			File tree1Root = new File(args[0]);
-			dirTraverse(tree1Root, 0);
+			dirTraverse(tree1Root, 0, hashesTree1);
 			System.out.println("------------------");
 			System.out.println("Tree root 2: " + args[1]);
 			File tree2Root = new File(args[1]);
-			dirTraverse(tree2Root, 0);
+			dirTraverse(tree2Root, 0, hashesTree2);
+			System.out.println("------------------");
+			System.out.println(hashesTree1.toString());
+			System.out.println("------------------");
+			System.out.println(hashesTree2.toString());
 			System.out.println("------------------");
 
 		} catch (Exception e) {
@@ -108,22 +143,32 @@ public class FileSysTreeCrawler {
 		}
 	}
 
-	public static void dirTraverse(File folder, int depth) {
+	public static void dirTraverse(File folder, int depth,
+			DirHashMap<String> hashes) {
+
 		File[] listOfFiles = folder.listFiles();
+		DirHashMap<String> folderHashes = new DirHashMap<String>(); // TODO:
+																	// provide
+																	// size
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 
-			if (listOfFiles[i].isDirectory()) {
+			File file = listOfFiles[i];
+
+			if (file.isDirectory()) {
 				// file is a directory
-				System.out.println(getSpaces(depth * 2)
-						+ listOfFiles[i].getName() + "(D)");
-				dirTraverse(listOfFiles[i], depth + 1);
-			} else if (listOfFiles[i].isFile()) {
+				System.out.println(getSpaces(depth * 2) + file.getName()
+						+ "(D)");
+				dirTraverse(file, depth + 1, hashes);
+			}
+
+			else if (file.isFile()) {
 				// file is a file (not a directory)
 				try {
-					System.out.println(getSpaces(depth * 2)
-							+ listOfFiles[i].getName() + "  (MD5:"
-							+ getMD5Checksum(listOfFiles[i].getPath()) + ")");
+					String fileHash = getMD5Checksum(file.getPath());
+					folderHashes.add(fileHash, file.getPath());
+					System.out.println(getSpaces(depth * 2) + file.getName()
+							+ "  (MD5:" + fileHash + ")");
 				} catch (IOException e) {
 					System.err.println("The following I/O exception raised: "
 							+ e.getMessage());
@@ -131,6 +176,12 @@ public class FileSysTreeCrawler {
 			} else
 				return; // TODO fix
 		}
+
+		String folderHash = getMD5OfString(folderHashes.getFolderHashes());
+		folderHashes.add(folderHash, folder.getPath());
+		hashes.addAll(folderHashes);
+		System.out.println(getSpaces(depth * 2) + folder.getName()
+				+ "  (folder MD5:" + folderHash + ")");
 
 	}
 
