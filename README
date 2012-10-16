@@ -1,3 +1,0 @@
-NOTE: This project is in pre-alpha stage. All code is experimental and it is not recommended to adopt it on significant data.
-
-Prospects: mirrorize is a tool that helps keeping two file system trees in sync in a conservative read-only fashion. It does not synchronize anything, it just identifies differences, reveals redundancies, and verifies that file and directory names are compliant with potentially defined naming conventions.
