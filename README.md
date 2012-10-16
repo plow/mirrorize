@@ -2,8 +2,7 @@
 mirrorize
 ==============
 
-keeping things in sync the safe way
---------------
+*keeping things in sync the safe way*
 
 **NOTE**: This project is in pre-alpha stage. All code is experimental and not recommended to adopt on significant data.
 
