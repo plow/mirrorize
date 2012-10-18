@@ -2,8 +2,11 @@ package ch.snowplow.mirrorize;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
 public class MirrorizeMain {
 
+    private static Logger log = Logger.getLogger(MirrorizeMain.class);
     private static final String CRYPTO_ALGO = "MD5";
 
     public static void main(String args[]) {
@@ -26,17 +29,11 @@ public class MirrorizeMain {
                 CRYPTO_ALGO);
 
         // Print the results of the tree crawlers
-        System.out.println("------------------");
-        System.out.println("Tree root 1: " + args[0]);
+        log.trace("Tree root 1: " + args[0] + "\nTree root 2: " + args[1]);
         DirHashMap<String> hashesTree1 = tree1Crawler.crawl();
-        System.out.println("------------------");
-        System.out.println("Tree root 2: " + args[1]);
         DirHashMap<String> hashesTree2 = tree2Crawler.crawl();
-        System.out.println("------------------");
-        System.out.println(hashesTree1.toString());
-        System.out.println("------------------");
-        System.out.println(hashesTree2.toString());
-        System.out.println("------------------");
+        log.trace(hashesTree1.toString());
+        log.trace(hashesTree2.toString());
 
     }
 

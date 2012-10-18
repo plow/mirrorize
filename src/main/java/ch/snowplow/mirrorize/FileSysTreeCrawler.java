@@ -9,7 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.log4j.Logger;
+
 public class FileSysTreeCrawler {
+
+    private static Logger log = Logger.getLogger(MirrorizeMain.class);
 
     abstract class MD5Hasher {
         public abstract String getHash();
@@ -19,8 +23,7 @@ public class FileSysTreeCrawler {
             // Converts the byte array containing the MD5 checksum to a hex
             for (int i = 0; i < hash.length; i++) {
                 // TODO: don't do this conversion -> make a MD5 class ->
-                // toString()
-                // returns hex string
+                // toString() returns hex string
                 // TODO: use string buffer
                 result += Integer.toString((hash[i] & 0xff) + 0x100, 16)
                         .substring(1);
@@ -42,8 +45,7 @@ public class FileSysTreeCrawler {
             try {
                 hash = createChecksum(is);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error("An I/O error occured while accessing a file.", e);
             }
             return convertMD5ToHexStr(hash);
         }
@@ -80,8 +82,9 @@ public class FileSysTreeCrawler {
             try {
                 hash = createChecksum(s);
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(
+                        "Unsupported encoding detected for the string to be hashed.",
+                        e);
             }
             return convertMD5ToHexStr(hash);
         }
@@ -106,10 +109,8 @@ public class FileSysTreeCrawler {
         try {
             digest = MessageDigest.getInstance(hashAlgo);
         } catch (NoSuchAlgorithmException e) {
-            // TODO: use log4j
-            System.err
-                    .println("The requested cryptographic algorithm is not available on this system.");
-            e.printStackTrace();
+            log.error("The requested cryptographic algorithm ('" + hashAlgo
+                    + "') is not available on this system.", e);
         }
     }
 
@@ -131,8 +132,7 @@ public class FileSysTreeCrawler {
 
             if (file.isDirectory()) {
                 // file is a directory
-                System.out.println(getSpaces(depth * 2) + file.getName()
-                        + "(D)");
+                log.info(getSpaces(depth * 2) + file.getName() + "(D)");
                 dirTraverse(file, depth + 1, hashes);
             }
 
@@ -142,26 +142,30 @@ public class FileSysTreeCrawler {
                     String fileHash = (new FileMD5Hasher(file.getPath()))
                             .getHash();
                     folderHashes.add(fileHash, file.getPath());
-                    System.out.println(getSpaces(depth * 2) + file.getName()
-                            + "  (MD5:" + fileHash + ")");
+                    log.info(getSpaces(depth * 2) + file.getName() + "  (MD5:"
+                            + fileHash + ")");
                 } catch (IOException e) {
-                    System.err.println("The following I/O exception raised: "
-                            + e.getMessage());
+                    log.error(
+                            "An I/O exception has raised while hashing the file "
+                                    + file.getPath() + ".", e);
+
                 }
-            } else
-                return; // TODO fix
+            } else {
+                log.warn("There lives something in your file system that is neither file, nor folder.");
+                return;
+            }
         }
 
         String folderHash = (new StringMD5Hasher(folderHashes.getFolderHashes()))
                 .getHash();
         folderHashes.add(folderHash, folder.getPath());
         hashes.addAll(folderHashes);
-        System.out.println(getSpaces(depth * 2) + folder.getName()
-                + "  (folder MD5:" + folderHash + ")");
+        log.info((getSpaces(depth * 2) + folder.getName() + "  (folder MD5:"
+                + folderHash + ")"));
 
     }
 
-    public static String getSpaces(int n) {
+    private static String getSpaces(int n) {
         return new String(new char[n]).replace('\0', ' ');
     }
 
