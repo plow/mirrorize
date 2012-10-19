@@ -102,7 +102,8 @@ public class FileSysTreeCrawler {
     private final File treeRoot;
     private DirHashMap<String> hashesTree;
 
-    public FileSysTreeCrawler(File treeRoot, String hashAlgo) {
+    public FileSysTreeCrawler(File treeRoot, String hashAlgo)
+            throws InvalidTreeRootException {
         this.treeRoot = treeRoot;
         this.hashesTree = new DirHashMap<String>();
         digest = null;
@@ -111,6 +112,9 @@ public class FileSysTreeCrawler {
         } catch (NoSuchAlgorithmException e) {
             log.error("The requested cryptographic algorithm ('" + hashAlgo
                     + "') is not available on this system.", e);
+        }
+        if (treeRoot == null | !treeRoot.isDirectory()) {
+            throw new InvalidTreeRootException();
         }
     }
 

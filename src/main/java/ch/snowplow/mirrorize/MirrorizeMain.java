@@ -1,6 +1,7 @@
 package ch.snowplow.mirrorize;
 
 import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import org.apache.log4j.Logger;
 
@@ -10,6 +11,14 @@ public class MirrorizeMain {
     private static final String CRYPTO_ALGO = "MD5";
 
     public static void main(String args[]) {
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                log.error("Uncaught exception.", e);
+            }
+        });
 
         // Immediately exit if the two roots of the trees to analyze are not
         // provided.
@@ -23,12 +32,15 @@ public class MirrorizeMain {
 
         // Instantiate tree crawlers for the two directories to be compared
         File tree1Root = new File(args[0]);
-        FileSysTreeCrawler tree1Crawler = new FileSysTreeCrawler(tree1Root,
-                CRYPTO_ALGO);
-
         File tree2Root = new File(args[1]);
-        FileSysTreeCrawler tree2Crawler = new FileSysTreeCrawler(tree2Root,
-                CRYPTO_ALGO);
+        FileSysTreeCrawler tree1Crawler, tree2Crawler;
+        try {
+            tree1Crawler = new FileSysTreeCrawler(tree1Root, CRYPTO_ALGO);
+            tree2Crawler = new FileSysTreeCrawler(tree2Root, CRYPTO_ALGO);
+        } catch (InvalidTreeRootException e) {
+            log.fatal("Invalid tree root. Program terminates.", e);
+            return;
+        }
 
         // Print the results of the tree crawlers
         log.info("Tree root 1: " + args[0]);
