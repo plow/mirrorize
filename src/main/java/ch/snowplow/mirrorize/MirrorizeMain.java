@@ -16,6 +16,8 @@ public class MirrorizeMain {
         if (args.length != 2) {
             System.out
                     .println("Usage: MD5Checksum /path/to/dir1 /path/to/dir2");
+            log.fatal("Too " + (args.length < 2 ? "few" : "much")
+                    + " arguments. Program terminates.");
             System.exit(0);
         }
 
@@ -29,7 +31,8 @@ public class MirrorizeMain {
                 CRYPTO_ALGO);
 
         // Print the results of the tree crawlers
-        log.trace("Tree root 1: " + args[0] + "\nTree root 2: " + args[1]);
+        log.info("Tree root 1: " + args[0]);
+        log.info("Tree root 2: " + args[1]);
         DirHashMap<String> hashesTree1 = tree1Crawler.crawl();
         DirHashMap<String> hashesTree2 = tree2Crawler.crawl();
         log.trace(hashesTree1.toString());
