@@ -15,6 +15,11 @@ public class DirHashMap<T extends Comparable<T>> {
         fileByPath = new HashMap<String, T>();
     }
 
+    public DirHashMap(int initialSize) {
+        fileByHash = new HashMap<T, String>(initialSize);
+        fileByPath = new HashMap<String, T>(initialSize);
+    }
+
     public void add(T fileHash, String filePath) {
         fileByHash.put(fileHash, filePath);
         fileByPath.put(filePath, fileHash);
@@ -33,7 +38,7 @@ public class DirHashMap<T extends Comparable<T>> {
         fileByPath.putAll(hashes.fileByPath);
     }
 
-    public String getFolderHashes() {
+    public String getSerializedHashes() {
         ArrayList<T> fileHashes = new ArrayList<T>(fileByHash.keySet());
         Collections.sort(fileHashes);
         StringBuffer strBuf = new StringBuffer();
