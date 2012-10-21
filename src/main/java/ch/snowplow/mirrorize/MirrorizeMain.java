@@ -5,13 +5,28 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import org.apache.log4j.Logger;
 
+/**
+ * The class containing the program entry point.
+ * 
+ * @author sf
+ * 
+ */
 public class MirrorizeMain {
 
     private static Logger log = Logger.getLogger(MirrorizeMain.class);
     private static final String CRYPTO_ALGO = "MD5";
 
+    /**
+     * Program entry point.
+     * 
+     * @param args
+     *            The arguments specified along with the program name on the
+     *            command line.
+     */
     public static void main(String args[]) {
 
+        // Log all runtime exceptions and other uncaught exceptions to the
+        // logger of this class
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 
             @Override

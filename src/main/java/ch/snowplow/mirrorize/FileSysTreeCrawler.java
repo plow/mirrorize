@@ -188,6 +188,7 @@ public class FileSysTreeCrawler {
      */
     public FileSysTreeCrawler(File treeRoot, String hashAlgo)
             throws InvalidTreeRootException {
+        // TODO there's only MD5 supported by now, so forget hashAlgo
         this.treeRoot = treeRoot;
         this.hashStore = new DirHashMap<String>();
         digest = null;
