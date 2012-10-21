@@ -185,19 +185,14 @@ public class FileSysTreeCrawler {
      *            algorithm names are those supported by the
      *            {@link java.security.MessageDigest} class.
      * @throws InvalidTreeRootException
+     * @throws NoSuchAlgorithmException
      */
     public FileSysTreeCrawler(File treeRoot, String hashAlgo)
-            throws InvalidTreeRootException {
+            throws InvalidTreeRootException, NoSuchAlgorithmException {
         // TODO there's only MD5 supported by now, so forget hashAlgo
         this.treeRoot = treeRoot;
         this.hashStore = new DirHashMap<String>();
-        digest = null;
-        try {
-            digest = MessageDigest.getInstance(hashAlgo);
-        } catch (NoSuchAlgorithmException e) {
-            log.error("The requested cryptographic algorithm ('" + hashAlgo
-                    + "') is not available on this system.", e);
-        }
+        digest = MessageDigest.getInstance(hashAlgo);
         if (treeRoot == null | !treeRoot.isDirectory()) {
             throw new InvalidTreeRootException();
         }

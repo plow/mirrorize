@@ -2,6 +2,7 @@ package ch.snowplow.mirrorize;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
@@ -48,13 +49,17 @@ public class MirrorizeMain {
         // Instantiate tree crawlers for the two directories to be compared
         File tree1Root = new File(args[0]);
         File tree2Root = new File(args[1]);
-        FileSysTreeCrawler tree1Crawler, tree2Crawler;
+        FileSysTreeCrawler tree1Crawler = null, tree2Crawler = null;
         try {
             tree1Crawler = new FileSysTreeCrawler(tree1Root, CRYPTO_ALGO);
             tree2Crawler = new FileSysTreeCrawler(tree2Root, CRYPTO_ALGO);
         } catch (InvalidTreeRootException e) {
             log.fatal("Invalid tree root. Program terminates.", e);
             return;
+        } catch (NoSuchAlgorithmException e) {
+            log.fatal(
+                    "The requested cryptographic algorithm is not available on this system. Program terminates.",
+                    e);
         }
 
         // Print the results of the tree crawlers
