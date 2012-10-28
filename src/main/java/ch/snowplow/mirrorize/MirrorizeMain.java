@@ -63,12 +63,23 @@ public class MirrorizeMain {
         }
 
         // Print the results of the tree crawlers
+        log.info("---------------------");
         log.info("Tree root 1: " + args[0]);
         log.info("Tree root 2: " + args[1]);
+        log.info("---------------------");
         DirHashMap<String> hashesTree1 = tree1Crawler.crawl();
+        log.info("---------------------");
         DirHashMap<String> hashesTree2 = tree2Crawler.crawl();
+        log.info("---------------------");
         log.trace(hashesTree1.toString());
         log.trace(hashesTree2.toString());
+        log.info("---------------------");
+
+        DirDiffAnalyzer<String> dirDiffAnalyzer = new DirDiffAnalyzer<String>(
+                hashesTree1, hashesTree2);
+        log.info("Missing: \n"
+                + new DirDiffSet(dirDiffAnalyzer.getMissingFiles()));
+        log.info("    New: \n" + new DirDiffSet(dirDiffAnalyzer.getNewFiles()));
 
     }
 

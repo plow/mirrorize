@@ -3,6 +3,7 @@ package ch.snowplow.mirrorize;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Represents a bidirectional mapping between the paths of files and their
@@ -17,16 +18,16 @@ import java.util.HashMap;
 public class DirHashMap<T extends Comparable<T>> {
 
     // TODO: value needs to be List<String> because of redundant files
-    private HashMap<T, String> fileByHash;
-    private HashMap<String, T> fileByPath;
+    private HashMap<T, Path> fileByHash;
+    private HashMap<Path, T> fileByPath;
 
     /**
      * Creates a new instance with the default initial size of the hash maps
      * used to implement the bidirectional map.
      */
     public DirHashMap() {
-        fileByHash = new HashMap<T, String>();
-        fileByPath = new HashMap<String, T>();
+        fileByHash = new HashMap<T, Path>();
+        fileByPath = new HashMap<Path, T>();
     }
 
     /**
@@ -38,8 +39,8 @@ public class DirHashMap<T extends Comparable<T>> {
      *            bidirectional map.
      */
     public DirHashMap(int initialSize) {
-        fileByHash = new HashMap<T, String>(initialSize);
-        fileByPath = new HashMap<String, T>(initialSize);
+        fileByHash = new HashMap<T, Path>(initialSize);
+        fileByPath = new HashMap<Path, T>(initialSize);
     }
 
     /**
@@ -50,7 +51,7 @@ public class DirHashMap<T extends Comparable<T>> {
      * @param filePath
      *            Path of the file
      */
-    public void add(T fileHash, String filePath) {
+    public void add(T fileHash, Path filePath) {
         fileByHash.put(fileHash, filePath);
         fileByPath.put(filePath, fileHash);
     }
@@ -63,7 +64,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            Hash of the file
      * @return Path of file with the specified hash.
      */
-    public String getFilePathByHash(T hash) {
+    public Path getFilePathByHash(T hash) {
         return fileByHash.get(hash);
     }
 
@@ -116,6 +117,7 @@ public class DirHashMap<T extends Comparable<T>> {
     @Override
     public String toString() {
         StringBuffer strBuf = new StringBuffer();
+        strBuf.append(fileByHash.size() + " file(s) hashed:\n");
         for (T key : fileByHash.keySet()) {
             strBuf.append(key.toString());
             strBuf.append(" -> ");
@@ -124,4 +126,9 @@ public class DirHashMap<T extends Comparable<T>> {
         }
         return strBuf.toString();
     }
+
+    public Set<T> getHashes() {
+        return fileByHash.keySet();
+    }
+
 }

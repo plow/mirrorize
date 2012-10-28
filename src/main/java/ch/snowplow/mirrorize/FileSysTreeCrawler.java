@@ -243,8 +243,8 @@ public class FileSysTreeCrawler {
 
             if (file.isDirectory()) {
                 // file is a directory
-                log.info(getSpaces(depth * 2) + file.getName() + "(dir)");
-                dirTraverse(file, depth + 1, hashStore);
+                log.info(Tools.getSpaces(depth * 2) + file.getName() + "(dir)");
+                dirTraverse(file, depth + 1, folderHashes);
             }
 
             else if (file.isFile()) {
@@ -252,9 +252,9 @@ public class FileSysTreeCrawler {
                 try {
                     String fileHash = (new FileMD5Hasher(file.getPath()))
                             .getHash();
-                    folderHashes.add(fileHash, file.getPath());
-                    log.info(getSpaces(depth * 2) + file.getName() + "  (MD5:"
-                            + fileHash + ")");
+                    folderHashes.add(fileHash, new Path(file.getPath()));
+                    log.info(Tools.getSpaces(depth * 2) + file.getName()
+                            + "  (MD5:" + fileHash + ")");
                 } catch (IOException e) {
                     log.error(
                             "An I/O exception has raised while hashing the file "
@@ -271,23 +271,12 @@ public class FileSysTreeCrawler {
         // TODO make an MD5Hasher subclass for creating directory hashes
         String folderHash = (new StringMD5Hasher(
                 folderHashes.getSerializedHashes())).getHash();
-        folderHashes.add(folderHash, folder.getPath());
+        folderHashes.add(folderHash, new Path(folder.getPath()));
 
         // add all hashes of the directory to the hash store
         hashStore.addAll(folderHashes);
-        log.info((getSpaces(depth * 2) + folder.getName() + "  (folder MD5:"
-                + folderHash + ")"));
-    }
-
-    /**
-     * Returns a string consisting of a specified number of spaces.
-     * 
-     * @param n
-     *            The number of spaces
-     * @return A string of spaces
-     */
-    private static String getSpaces(int n) {
-        return new String(new char[n]).replace('\0', ' ');
+        log.info((Tools.getSpaces(depth * 2) + folder.getName()
+                + "  (folder MD5:" + folderHash + ")"));
     }
 
 }

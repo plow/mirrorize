@@ -81,7 +81,7 @@ public class FileSysTreeCrawlerTest extends TestCase {
         }
     }
 
-    // TODO test different hash algorithms
     // TODO make fixtures of files
+    // TODO create trees just by means of these fixtures in setup()
 
 }
