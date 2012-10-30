@@ -1,47 +1,60 @@
 package ch.snowplow.mirrorize;
 
 import junit.framework.TestCase;
-import ch.snowplow.mirrorize.common.Path;
-import ch.snowplow.mirrorize.databuilders.PathBuilder;
+import ch.snowplow.mirrorize.testdata.PathTestData;
 
 public class PathTest extends TestCase {
 
-    enum TestPath {
-        PATH_ABS_1("/an/absolute/pa.th", "/an/absolute/pa.th", "pa.th", 2),
-        PATH_ABS_2("/an/absolute/pa.th/", "/an/absolute/pa.th", "pa.th", 2),
-        PATH_REL_1("relative/pat.h", "relative/pat.h", "pat.h", 1),
-        PATH_REL_2("relative/pat.h/", "relative/pat.h", "pat.h", 1),
-        PATH_ROOT_1("roo.t", "roo.t", "roo.t", 0),
-        PATH_ROOT_2("roo.t/", "roo.t", "roo.t", 0);
-
-        private Path pathObj;
-        private String path, name;
-        private int depth;
-
-        TestPath(String pathOrig, String path, String name, int depth) {
-            this.pathObj = new PathBuilder().withPath(pathOrig).build();
-            this.path = path;
-            this.name = name;
-            this.depth = depth;
-        }
-    }
-
     public void testGetPath() {
-        for (TestPath test : TestPath.values()) {
-            assertEquals(test.path, test.pathObj.getPath());
+        for (PathTestData test : PathTestData.values()) {
+            assertEquals(test.getPath(), test.getPathObj().getPath());
         }
     }
 
     public void testGetName() {
-        for (TestPath test : TestPath.values()) {
-            assertEquals(test.name, test.pathObj.getName());
+        for (PathTestData test : PathTestData.values()) {
+            assertEquals(test.getName(), test.getPathObj().getName());
         }
     }
 
     public void testGetDepth() {
-        for (TestPath test : TestPath.values()) {
-            assertEquals(test.depth, test.pathObj.getDepth());
+        for (PathTestData test : PathTestData.values()) {
+            assertEquals(test.getDepth(), test.getPathObj().getDepth());
         }
     }
 
+    public void testCompareTo() {
+        assertTrue(PathTestData.PATH_REF.getPathObj().compareTo(
+                PathTestData.PATH_REF.getPathObj()) == 0);
+        assertTrue(PathTestData.PATH_REF.getPathObj().compareTo(
+                PathTestData.PATH_LESS1.getPathObj()) > 0);
+        assertTrue(PathTestData.PATH_REF.getPathObj().compareTo(
+                PathTestData.PATH_LESS2.getPathObj()) > 0);
+        assertTrue(PathTestData.PATH_REF.getPathObj().compareTo(
+                PathTestData.PATH_LESS3.getPathObj()) > 0);
+        assertTrue(PathTestData.PATH_REF.getPathObj().compareTo(
+                PathTestData.PATH_MORE1.getPathObj()) < 0);
+        assertTrue(PathTestData.PATH_REF.getPathObj().compareTo(
+                PathTestData.PATH_MORE2.getPathObj()) < 0);
+        assertTrue(PathTestData.PATH_REF.getPathObj().compareTo(
+                PathTestData.PATH_MORE3.getPathObj()) < 0);
+    }
+
+    public void testHashCode() {
+        assertTrue(PathTestData.PATH_REF.getPathObj().hashCode() == PathTestData.PATH_REF
+                .getPathObj().hashCode());
+        assertFalse(PathTestData.PATH_REF.getPathObj().hashCode() == PathTestData.PATH_LESS1
+                .getPathObj().hashCode());
+        assertFalse(PathTestData.PATH_REF.getPathObj().hashCode() == PathTestData.PATH_MORE1
+                .getPathObj().hashCode());
+    }
+
+    public void testEquals() {
+        assertTrue(PathTestData.PATH_REF.getPathObj().equals(
+                PathTestData.PATH_REF.getPathObj()));
+        assertFalse(PathTestData.PATH_REF.getPathObj().equals(
+                PathTestData.PATH_LESS1.getPathObj()));
+        assertFalse(PathTestData.PATH_REF.getPathObj().equals(
+                PathTestData.PATH_LESS2.getPathObj()));
+    }
 }
