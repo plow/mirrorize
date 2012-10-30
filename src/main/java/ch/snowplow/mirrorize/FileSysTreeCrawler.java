@@ -171,6 +171,7 @@ public class FileSysTreeCrawler {
 
     private MessageDigest digest;
     private final File treeRoot;
+    private final int treeRootPrefixLen;
     private DirHashMap<String> hashStore;
 
     /**
@@ -191,6 +192,7 @@ public class FileSysTreeCrawler {
             throws InvalidTreeRootException, NoSuchAlgorithmException {
         // TODO there's only MD5 supported by now, so forget hashAlgo
         this.treeRoot = treeRoot;
+        this.treeRootPrefixLen = treeRoot.getPath().length() + 1;
         this.hashStore = new DirHashMap<String>();
         digest = MessageDigest.getInstance(hashAlgo);
         if (treeRoot == null | !treeRoot.isDirectory()) {
@@ -250,9 +252,10 @@ public class FileSysTreeCrawler {
             else if (file.isFile()) {
                 // file is a file (not a directory)
                 try {
-                    String fileHash = (new FileMD5Hasher(file.getPath()))
+                    String fileHash = new FileMD5Hasher(file.getPath())
                             .getHash();
-                    folderHashes.add(fileHash, new Path(file.getPath()));
+                    folderHashes.add(fileHash, new Path(file.getPath()
+                            .substring(treeRootPrefixLen)));
                     log.info(Tools.getSpaces(depth * 2) + file.getName()
                             + "  (MD5:" + fileHash + ")");
                 } catch (IOException e) {
@@ -271,7 +274,8 @@ public class FileSysTreeCrawler {
         // TODO make an MD5Hasher subclass for creating directory hashes
         String folderHash = (new StringMD5Hasher(
                 folderHashes.getSerializedHashes())).getHash();
-        folderHashes.add(folderHash, new Path(folder.getPath()));
+        folderHashes.add(folderHash, new Path(depth == 0 ? "" : folder
+                .getPath().substring(treeRootPrefixLen)));
 
         // add all hashes of the directory to the hash store
         hashStore.addAll(folderHashes);

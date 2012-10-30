@@ -131,4 +131,8 @@ public class DirHashMap<T extends Comparable<T>> {
         return fileByHash.keySet();
     }
 
+    public Set<Path> getPaths() {
+        return fileByPath.keySet();
+    }
+
 }

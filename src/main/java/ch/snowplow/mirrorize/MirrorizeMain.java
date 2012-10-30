@@ -77,9 +77,10 @@ public class MirrorizeMain {
 
         DirDiffAnalyzer<String> dirDiffAnalyzer = new DirDiffAnalyzer<String>(
                 hashesTree1, hashesTree2);
-        log.info("Missing: \n"
-                + new DirDiffSet(dirDiffAnalyzer.getMissingFiles()));
-        log.info("    New: \n" + new DirDiffSet(dirDiffAnalyzer.getNewFiles()));
+        log.info("Diffs of hashes: \n"
+                + new DirDiffSet(dirDiffAnalyzer.getDiffsOfHashes()));
+        log.info(" Diffs of paths: \n"
+                + new DirDiffSet(dirDiffAnalyzer.getDiffsOfPaths()));
 
     }
 
