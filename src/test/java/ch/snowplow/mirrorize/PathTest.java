@@ -1,6 +1,7 @@
 package ch.snowplow.mirrorize;
 
 import junit.framework.TestCase;
+import ch.snowplow.mirrorize.common.Path;
 import ch.snowplow.mirrorize.databuilders.PathBuilder;
 
 public class PathTest extends TestCase {

@@ -6,6 +6,12 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
+import ch.snowplow.mirrorize.analysis.DirDiffAnalyzer;
+import ch.snowplow.mirrorize.analysis.DirDiffSet;
+import ch.snowplow.mirrorize.common.DirHashMap;
+import ch.snowplow.mirrorize.gathering.FileSysTreeCrawler;
+import ch.snowplow.mirrorize.gathering.InvalidTreeRootException;
+
 /**
  * The class containing the program entry point.
  * 

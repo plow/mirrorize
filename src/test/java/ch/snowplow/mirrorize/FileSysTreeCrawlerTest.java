@@ -3,6 +3,9 @@ package ch.snowplow.mirrorize;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
 
+import ch.snowplow.mirrorize.gathering.FileSysTreeCrawler;
+import ch.snowplow.mirrorize.gathering.InvalidTreeRootException;
+
 import junit.framework.TestCase;
 
 /**

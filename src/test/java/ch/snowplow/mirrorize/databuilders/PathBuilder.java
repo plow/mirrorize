@@ -1,6 +1,6 @@
 package ch.snowplow.mirrorize.databuilders;
 
-import ch.snowplow.mirrorize.Path;
+import ch.snowplow.mirrorize.common.Path;
 
 public class PathBuilder implements Buildable<Path> {
 
