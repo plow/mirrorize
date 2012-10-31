@@ -11,6 +11,7 @@ public class Path implements Comparable<Path> {
         // TODO matches(String regex) to verify an appropriate path format
         if (path.length() > 0
                 && path.lastIndexOf(SEPARATOR) == path.length() - 1) {
+            // strip tailing slash
             this.path = path.substring(0, path.length() - 1);
         } else {
             this.path = path;
@@ -19,6 +20,11 @@ public class Path implements Comparable<Path> {
 
     public String getPath() {
         return path;
+    }
+
+    public String getDir() {
+        int i = path.lastIndexOf(SEPARATOR);
+        return (i < 0 ? "" : path.substring(0, i));
     }
 
     public String getName() {

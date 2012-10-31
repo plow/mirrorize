@@ -1,9 +1,15 @@
 package ch.snowplow.mirrorize;
 
 import junit.framework.TestCase;
+import ch.snowplow.mirrorize.testdata.FileTestData;
 import ch.snowplow.mirrorize.testdata.PathTestData;
 
 public class PathTest extends TestCase {
+
+    @Override
+    public void setUp() {
+        FileTestData.TEST_FILE.getFile();
+    }
 
     public void testGetPath() {
         for (PathTestData test : PathTestData.values()) {
@@ -14,6 +20,12 @@ public class PathTest extends TestCase {
     public void testGetName() {
         for (PathTestData test : PathTestData.values()) {
             assertEquals(test.getName(), test.getPathObj().getName());
+        }
+    }
+
+    public void testGetDir() {
+        for (PathTestData test : PathTestData.values()) {
+            assertEquals(test.getDir(), test.getPathObj().getDir());
         }
     }
 
