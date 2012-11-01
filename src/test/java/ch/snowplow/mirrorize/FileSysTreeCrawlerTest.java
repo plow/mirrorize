@@ -3,24 +3,25 @@ package ch.snowplow.mirrorize;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
 
+import ch.snowplow.mirrorize.databuilders.FileBuilder;
 import ch.snowplow.mirrorize.gathering.FileSysTreeCrawler;
 import ch.snowplow.mirrorize.gathering.InvalidTreeRootException;
-
-import junit.framework.TestCase;
 
 /**
  * Unit test for simple App.
  */
-public class FileSysTreeCrawlerTest extends TestCase {
+public class FileSysTreeCrawlerTest extends FileSysTestCase {
 
     /**
      * Test that only existing directory paths can be used as root folders.
      */
     public void testRootDirectories() {
         // Root directories
-        File nonexistingDir = new File("src/test/resources/treeInvalid");
-        File existingFile = new File("src/test/resources/tree1/file1.txt");
-        File existingDir = new File("src/test/resources/tree1");
+        File nonexistingDir = new File(FileBuilder.TEST_TREE_ROOT
+                + "treeInvalid");
+        File existingFile = new File(FileBuilder.TEST_TREE_ROOT
+                + "tree1/a/file_a1.txt");
+        File existingDir = new File(FileBuilder.TEST_TREE_ROOT + "tree1");
         assertFalse(nonexistingDir.exists());
         assertTrue(existingFile != null && !existingFile.isDirectory());
         assertTrue(existingDir != null && existingDir.isDirectory());
@@ -68,7 +69,7 @@ public class FileSysTreeCrawlerTest extends TestCase {
 
         final String[] hashAlgos = { "MD5", "SHA-1", "SHA-256", "INVALID" };
         final boolean[] validAlgos = { true, true, true, false };
-        final File rootDir = new File("src/test/resources/tree1");
+        final File rootDir = new File(FileBuilder.TEST_TREE_ROOT + "tree1");
 
         for (int i = 0; i < hashAlgos.length; i++) {
             try {

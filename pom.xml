@@ -39,6 +39,17 @@
 	      <target>1.7</target>
 	    </configuration>
 	  </plugin>
+	  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              **/FileSysTestCase.java  <!-- parent class of some test cases -->
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
 	</plugins>  
   </build>
   
