@@ -1,4 +1,4 @@
-package ch.snowplow.mirrorize.databuilders;
+package ch.snowplow.mirrorize.testdata.builders;
 
 public interface Buildable<T> {
 

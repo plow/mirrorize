@@ -1,7 +1,7 @@
 package ch.snowplow.mirrorize.testdata;
 
 import ch.snowplow.mirrorize.common.Path;
-import ch.snowplow.mirrorize.databuilders.PathBuilder;
+import ch.snowplow.mirrorize.testdata.builders.PathBuilder;
 
 public enum PathTestData {
     // test path, name, depth

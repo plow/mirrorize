@@ -8,9 +8,9 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
 
-import ch.snowplow.mirrorize.databuilders.FileBuilder;
 import ch.snowplow.mirrorize.gathering.InvalidTreeRootException;
 import ch.snowplow.mirrorize.testdata.FileTestData;
+import ch.snowplow.mirrorize.testdata.builders.FileBuilder;
 
 /**
  * The base class for all test cases which need the test file trees on the file
@@ -40,7 +40,8 @@ public class FileSysTestCase extends TestCase {
 
     @Override
     public void tearDown() {
-        File testDirRoot = new File(FileBuilder.TEST_TREE_ROOT);
+
+        File testDirRoot = new File(FileBuilder.DEFAULT_TEST_TREE_ROOT);
         if (!testDirRoot.isDirectory() || !testDirRoot.exists()) {
             try {
                 throw new InvalidTreeRootException();
@@ -57,6 +58,7 @@ public class FileSysTestCase extends TestCase {
         } catch (IOException e) {
             log.fatal("I/O error occured while deleting a test file.", e);
         }
+
     }
 
     /**

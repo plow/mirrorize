@@ -2,10 +2,13 @@ package ch.snowplow.mirrorize.testdata;
 
 import java.io.File;
 
-import ch.snowplow.mirrorize.databuilders.FileBuilder;
-import ch.snowplow.mirrorize.databuilders.PathBuilder;
+import ch.snowplow.mirrorize.testdata.builders.FileBuilder;
+import ch.snowplow.mirrorize.testdata.builders.PathBuilder;
 
 public enum FileTestData {
+
+    // TODO: make sure that there are two files with the same content, i.e.,
+    // with the same hash in one and the same tree.
 
     // identical file in both trees
     FILE_TR1_A1("tree1/a/file_a1.txt", "content of the file file_a1.txt"),
@@ -89,6 +92,12 @@ public enum FileTestData {
         return new FileBuilder()
                 .withPath(new PathBuilder().withPath(path).build())
                 .withContent(content).build();
+    }
+
+    public File build(String treeRoot) {
+        return new FileBuilder()
+                .withPath(new PathBuilder().withPath(path).build())
+                .withContent(content).withTreeRoot(treeRoot).build();
     }
 
 }

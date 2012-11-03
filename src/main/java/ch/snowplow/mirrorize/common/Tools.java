@@ -7,10 +7,15 @@ public final class Tools {
      * 
      * @param n
      *            The number of spaces
-     * @return A string of spaces
+     * @return The empty string if n<=0. Otherwise, a string of n concatenated
+     *         spaces.
      */
     public static String getSpaces(int n) {
-        return new String(new char[n]).replace('\0', ' ');
+        if (n < 1) {
+            return "";
+        } else {
+            return new String(new char[n]).replace('\0', ' ');
+        }
     }
 
 }

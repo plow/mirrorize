@@ -3,8 +3,8 @@ package ch.snowplow.mirrorize.common;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
-
 
 /**
  * Represents a bidirectional mapping between the paths of files and their
@@ -19,33 +19,39 @@ import java.util.Set;
 public class DirHashMap<T extends Comparable<T>> {
 
     // TODO: value needs to be List<String> because of redundant files
+    private HashSet<FileHash<T>> fileHashes;
     private HashMap<T, Path> fileByHash;
     private HashMap<Path, T> fileByPath;
 
     /**
-     * Creates a new instance with the default initial size of the hash maps
-     * used to implement the bidirectional map.
+     * Creates a new instance with the default initial size of the underlying
+     * collections.
      */
     public DirHashMap() {
+        fileHashes = new HashSet<FileHash<T>>();
         fileByHash = new HashMap<T, Path>();
         fileByPath = new HashMap<Path, T>();
     }
 
     /**
-     * Creates a new instance with a given initial size of the hash maps used to
-     * implement the bidirectional map.
+     * Creates a new instance with a given initial size of the underlying
+     * collections.
      * 
      * @param initialSize
      *            Initial size of the hash maps used to implement the
      *            bidirectional map.
      */
     public DirHashMap(int initialSize) {
+        // TODO initial size is problematic because the file hashes set doesn't
+        // contain the same number of element as the hash maps in case there are
+        // several files with the same content, i.e., with the same hash.
+        fileHashes = new HashSet<FileHash<T>>(initialSize);
         fileByHash = new HashMap<T, Path>(initialSize);
         fileByPath = new HashMap<Path, T>(initialSize);
     }
 
     /**
-     * Adds a new hash/filepath pair to the data structure.
+     * Adds a new hash-path pair to the data structure.
      * 
      * @param fileHash
      *            Hash of the file
@@ -53,6 +59,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            Path of the file
      */
     public void add(T fileHash, Path filePath) {
+        fileHashes.add(new FileHash<T>(filePath, fileHash));
         fileByHash.put(fileHash, filePath);
         fileByPath.put(filePath, fileHash);
     }
@@ -77,7 +84,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            Path of the file.
      * @return Hash of the file for which the path is given.
      */
-    public T getFileHashByPath(String path) {
+    public T getFileHashByPath(Path path) {
         return fileByPath.get(path);
     }
 
@@ -90,6 +97,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            The instance to copy all elements from.
      */
     public void addAll(DirHashMap<T> hashes) {
+        fileHashes.addAll(hashes.fileHashes);
         fileByHash.putAll(hashes.fileByHash);
         fileByPath.putAll(hashes.fileByPath);
     }
@@ -126,6 +134,10 @@ public class DirHashMap<T extends Comparable<T>> {
             strBuf.append("\n");
         }
         return strBuf.toString();
+    }
+
+    public HashSet<FileHash<T>> getFileHashes() {
+        return fileHashes;
     }
 
     public Set<T> getHashes() {

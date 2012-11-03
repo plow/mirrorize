@@ -1,4 +1,4 @@
-package ch.snowplow.mirrorize.databuilders;
+package ch.snowplow.mirrorize.testdata.builders;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,10 +13,16 @@ import ch.snowplow.mirrorize.gathering.InvalidTreeRootException;
 public class FileBuilder implements Buildable<File> {
 
     private static Logger log = Logger.getLogger(FileBuilder.class);
-    public static final String TEST_TREE_ROOT = "target/test_trees/";
+    public static final String DEFAULT_TEST_TREE_ROOT = "target/test_trees/";
 
-    Path path = new Path("path/of/a/fil.e");
-    String content = "this is file content.";
+    private String testTreeRoot = DEFAULT_TEST_TREE_ROOT;
+    private Path path = new Path("path/of/a/fil.e");
+    private String content = "this is file content.";
+
+    public FileBuilder withTreeRoot(String treeRoot) {
+        this.testTreeRoot = treeRoot;
+        return this;
+    }
 
     public FileBuilder withPath(Path path) {
         this.path = path;
@@ -39,12 +45,12 @@ public class FileBuilder implements Buildable<File> {
             boolean relativePath = true;
             if (pathDir.startsWith(Character.toString(Path.SEPARATOR))) {
                 relativePath = false;
-                if (!pathDir.startsWith(currDir + TEST_TREE_ROOT))
+                if (!pathDir.startsWith(currDir + testTreeRoot))
                     throw new InvalidTreeRootException();
             }
 
             // create directories if necessary
-            Path absPath = new Path(relativePath ? currDir + TEST_TREE_ROOT
+            Path absPath = new Path(relativePath ? currDir + testTreeRoot
                     + path.getPath() : path.getPath());
             File dir = new File(absPath.getDir());
             f = new File(absPath.getPath());

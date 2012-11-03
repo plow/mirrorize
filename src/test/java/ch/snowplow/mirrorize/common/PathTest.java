@@ -1,4 +1,4 @@
-package ch.snowplow.mirrorize;
+package ch.snowplow.mirrorize.common;
 
 import junit.framework.TestCase;
 import ch.snowplow.mirrorize.testdata.PathTestData;
