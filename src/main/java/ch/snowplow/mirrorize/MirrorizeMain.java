@@ -89,6 +89,8 @@ public class MirrorizeMain {
                 + new DirDiffSet(dirDiffAnalyzer.getModifiedFiles()));
         log.info("  Deleted files: \n"
                 + new DirDiffSet(dirDiffAnalyzer.getDeletedFiles()));
+        log.info("    Moved files: \n"
+                + new DirDiffSet(dirDiffAnalyzer.getMovedFiles()));
         log.info("      All files: \n"
                 + new DirDiffSet(dirDiffAnalyzer.getAllFiles()));
 

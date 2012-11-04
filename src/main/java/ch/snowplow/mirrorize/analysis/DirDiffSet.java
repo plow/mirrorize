@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import ch.snowplow.mirrorize.common.FileHash;
-import ch.snowplow.mirrorize.common.Tools;
+import ch.snowplow.mirrorize.common.FileHashCorresp;
 
 public class DirDiffSet<T> extends TreeSet<FileHash<T>> {
 
@@ -26,8 +26,15 @@ public class DirDiffSet<T> extends TreeSet<FileHash<T>> {
         Iterator<FileHash<T>> it = iterator();
         while (it.hasNext()) {
             FileHash<T> fileHash = it.next();
-            strBuf.append(Tools.getSpaces(fileHash.getPath().getDepth() * 2))
-                    .append(fileHash.getPath().getName()).append("\n");
+            // strBuf.append(Tools.getSpaces(fileHash.getPath().getDepth() * 2))
+            // .append(fileHash.getPath().getName()).append("\n");
+
+            strBuf.append(fileHash.getPath().getPath());
+            if (fileHash instanceof FileHashCorresp) {
+                strBuf.append(" -> ").append(
+                        ((FileHashCorresp<T>) fileHash).getCorrespPath());
+            }
+            strBuf.append("\n");
         }
         return strBuf.toString();
     }

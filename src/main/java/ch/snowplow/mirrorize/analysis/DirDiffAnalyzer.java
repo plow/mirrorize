@@ -5,6 +5,7 @@ import java.util.Set;
 
 import ch.snowplow.mirrorize.common.DirHashMap;
 import ch.snowplow.mirrorize.common.FileHash;
+import ch.snowplow.mirrorize.common.FileHashCorresp;
 import ch.snowplow.mirrorize.common.Path;
 
 public class DirDiffAnalyzer<T extends Comparable<T>> {
@@ -43,6 +44,22 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
             correspFiles.add(new FileHash<T>(p, ourMap.getFileHashByPath(p)));
         }
         // subtract identical files, i.e. those also having corresponding hashes
+        correspFiles.removeAll(theirMap.getFileHashes());
+        return correspFiles;
+    }
+
+    public Set<FileHashCorresp<T>> getMovedFiles() {
+        // get set of corresponding hashes
+        HashSet<T> ourHashes = new HashSet<T>(ourMap.getHashes());
+        ourHashes.retainAll(theirMap.getHashes());
+        // build list of correspondences to return
+        HashSet<FileHashCorresp<T>> correspFiles = new HashSet<FileHashCorresp<T>>(
+                ourHashes.size());
+        for (T hash : ourHashes) {
+            correspFiles.add(new FileHashCorresp<T>(ourMap
+                    .getFilePathByHash(hash), theirMap.getFilePathByHash(hash),
+                    hash));
+        }
         correspFiles.removeAll(theirMap.getFileHashes());
         return correspFiles;
     }

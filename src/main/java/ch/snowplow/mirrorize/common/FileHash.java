@@ -2,8 +2,6 @@ package ch.snowplow.mirrorize.common;
 
 public class FileHash<T> implements Comparable<FileHash<T>> {
 
-    // TODO: implement hashCode() such that this object can be used in HashSets
-
     private final Path path;
     private final T hash;
 
