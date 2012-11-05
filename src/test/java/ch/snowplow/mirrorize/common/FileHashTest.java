@@ -75,6 +75,12 @@ public class FileHashTest extends TestCase {
                 FileHashStringTestData.FILEHASH_SAMEPATH.getFileHash()));
         assertFalse(FileHashStringTestData.FILEHASH_REF.getFileHash().equals(
                 FileHashStringTestData.FILEHASH_DIFFERENT.getFileHash()));
+
+        assertFalse(FileHashStringTestData.FILEHASH_REF.getFileHash().equals(
+                null));
+        assertFalse(FileHashStringTestData.FILEHASH_REF.getFileHash().equals(
+                new String("abc")));
+        // TODO: test against other file hash types (T != String)
     }
 
 }

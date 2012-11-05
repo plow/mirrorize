@@ -27,16 +27,19 @@ public class FileHash<T> implements Comparable<FileHash<T>> {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
+        FileHash<T> other = null;
+        try {
+            other = (FileHash<T>) obj;
+        } catch (ClassCastException e) {
             return false;
-        @SuppressWarnings("rawtypes")
-        FileHash other = (FileHash) obj;
+        }
         if (hash == null) {
             if (other.hash != null)
                 return false;
