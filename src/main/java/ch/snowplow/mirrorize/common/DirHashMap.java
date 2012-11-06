@@ -65,6 +65,20 @@ public class DirHashMap<T extends Comparable<T>> {
     }
 
     /**
+     * Adds all elements of the {@link ch.snowplow.mirrorize.common.DirHashMap}
+     * provided as argument to this object. Just the object references are
+     * copied, not the elements itself.
+     * 
+     * @param hashes
+     *            The instance to copy all elements from.
+     */
+    public void addAll(DirHashMap<T> hashes) {
+        fileHashes.addAll(hashes.fileHashes);
+        fileByHash.putAll(hashes.fileByHash);
+        fileByPath.putAll(hashes.fileByPath);
+    }
+
+    /**
      * Retrieve the file path of a specified file hash. The behavior is
      * equivalent with {@link java.util.HashMap#get(Object)}.
      * 
@@ -86,20 +100,6 @@ public class DirHashMap<T extends Comparable<T>> {
      */
     public T getFileHashByPath(Path path) {
         return fileByPath.get(path);
-    }
-
-    /**
-     * Adds all elements of the {@link ch.snowplow.mirrorize.common.DirHashMap}
-     * provided as argument to this object. Just the object references are
-     * copied, not the elements itself.
-     * 
-     * @param hashes
-     *            The instance to copy all elements from.
-     */
-    public void addAll(DirHashMap<T> hashes) {
-        fileHashes.addAll(hashes.fileHashes);
-        fileByHash.putAll(hashes.fileByHash);
-        fileByPath.putAll(hashes.fileByPath);
     }
 
     /**
