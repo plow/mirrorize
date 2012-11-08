@@ -1,7 +1,11 @@
 package ch.snowplow.mirrorize.common;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import junit.framework.TestCase;
 import ch.snowplow.mirrorize.testdata.builders.DirHashMapBuilder;
+import ch.snowplow.mirrorize.testdata.builders.FileHashBuilder;
 import ch.snowplow.mirrorize.testdata.builders.PathBuilder;
 
 public class DirHashMapTest extends TestCase {
@@ -21,19 +25,62 @@ public class DirHashMapTest extends TestCase {
     }
 
     public void testAddAll() {
-        // TODO implement
+        DirHashMap<String> map = new DirHashMapBuilder<String>().build();
+        assertEquals(0, map.getHashes().size());
+        assertEquals(0, map.getPaths().size());
+        assertFalse(map.getHashes().contains("abc"));
+        assertFalse(map.getPaths().contains(
+                new PathBuilder().withPath("a/pat.h").build()));
+        assertFalse(map.getHashes().contains("xyz"));
+        assertFalse(map.getPaths().contains(
+                new PathBuilder().withPath("b/pat.h").build()));
+
+        DirHashMap<String> mapToAdd = new DirHashMapBuilder<String>()
+                .add("abc", "a/pat.h").add("xyz", "b/pat.h").build();
+        map.addAll(mapToAdd);
+
+        assertEquals(2, map.getHashes().size());
+        assertEquals(2, map.getPaths().size());
+        assertTrue(map.getHashes().contains("abc"));
+        assertTrue(map.getPaths().contains(
+                new PathBuilder().withPath("a/pat.h").build()));
+        assertTrue(map.getHashes().contains("xyz"));
+        assertTrue(map.getPaths().contains(
+                new PathBuilder().withPath("b/pat.h").build()));
     }
 
     public void testGetFilePathByHash() {
-        // TODO implement
+        DirHashMap<String> map = new DirHashMapBuilder<String>()
+                .add("abc", "a/pat.h").add("xyz", "b/pat.h").build();
+        assertNull(map.getFilePathByHash("abcd"));
+        assertEquals(new PathBuilder().withPath("a/pat.h").build(),
+                map.getFilePathByHash("abc"));
+        assertEquals(new PathBuilder().withPath("b/pat.h").build(),
+                map.getFilePathByHash("xyz"));
     }
 
     public void testGetFileHashByPath() {
-        // TODO implement
+        DirHashMap<String> map = new DirHashMapBuilder<String>()
+                .add("abc", "a/pat.h").add("xyz", "b/pat.h").build();
+        assertNull(map.getFileHashByPath(new PathBuilder().withPath("no/pat.h")
+                .build()));
+        assertEquals("abc", map.getFileHashByPath(new PathBuilder().withPath(
+                "a/pat.h").build()));
+        assertEquals("xyz", map.getFileHashByPath(new PathBuilder().withPath(
+                "b/pat.h").build()));
     }
 
     public void testGetSerializedHashes() {
-        // TODO implement
+        DirHashMap<String> map1 = new DirHashMapBuilder<String>()
+                .add("a", "a/pat.h").add("b", "b/pat.h").add("c", "c/pat.h")
+                .build();
+        assertEquals("abc", map1.getSerializedHashes());
+
+        DirHashMap<String> map2 = new DirHashMapBuilder<String>()
+                .add("i", "c/pat.b").add("h", "c/pat.a").add("g", "c")
+                .add("f", "b/pat.b").add("e", "b/pat.a").add("d", "b")
+                .add("c", "a/pat.b").add("b", "a/pat.a").add("a", "a").build();
+        assertEquals("abcdefghi", map2.getSerializedHashes());
     }
 
     public void testToString() {
@@ -41,14 +88,50 @@ public class DirHashMapTest extends TestCase {
     }
 
     public void testGetFileHashes() {
-        // TODO implement
+        DirHashMap<String> map = new DirHashMapBuilder<String>()
+                .add("a", "a/pat.h").add("b", "b/pat.h").add("c", "c/pat.h")
+                .build();
+        HashSet<FileHash<String>> hashes = map.getFileHashes();
+        assertEquals(3, hashes.size());
+        assertTrue(hashes.contains(new FileHashBuilder<String>("")
+                .withHash("a").withPath("a/pat.h").build()));
+        assertTrue(hashes.contains(new FileHashBuilder<String>("")
+                .withHash("b").withPath("b/pat.h").build()));
+        assertTrue(hashes.contains(new FileHashBuilder<String>("")
+                .withHash("c").withPath("c/pat.h").build()));
+        assertFalse(hashes.contains(new FileHashBuilder<String>("")
+                .withHash("ab").withPath("a/pat.h").build()));
+        assertFalse(hashes.contains(new FileHashBuilder<String>("")
+                .withHash("b").withPath("bb/pat.h").build()));
+        assertFalse(hashes.contains(new FileHashBuilder<String>("")
+                .withHash("cc").withPath("cc/pat.h").build()));
     }
 
     public void testGetHashes() {
-        // TODO implement
+        DirHashMap<String> map = new DirHashMapBuilder<String>()
+                .add("a", "a/pat.h").add("b", "b/pat.h").add("c", "c/pat.h")
+                .build();
+        Set<String> hashes = map.getHashes();
+        assertEquals(3, hashes.size());
+        assertTrue(hashes.contains("a"));
+        assertTrue(hashes.contains("b"));
+        assertTrue(hashes.contains("c"));
+        assertFalse(hashes.contains("d"));
     }
 
     public void testGetPaths() {
-        // TODO implement
+        DirHashMap<String> map = new DirHashMapBuilder<String>()
+                .add("a", "a/pat.h").add("b", "b/pat.h").add("c", "c/pat.h")
+                .build();
+        Set<Path> paths = map.getPaths();
+        assertEquals(3, paths.size());
+        assertTrue(paths
+                .contains(new PathBuilder().withPath("a/pat.h").build()));
+        assertTrue(paths
+                .contains(new PathBuilder().withPath("b/pat.h").build()));
+        assertTrue(paths
+                .contains(new PathBuilder().withPath("c/pat.h").build()));
+        assertFalse(paths.contains(new PathBuilder().withPath("d/pat.h")
+                .build()));
     }
 }
