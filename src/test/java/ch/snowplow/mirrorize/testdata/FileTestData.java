@@ -100,4 +100,12 @@ public enum FileTestData {
                 .withContent(content).withTreeRoot(treeRoot).build();
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
 }

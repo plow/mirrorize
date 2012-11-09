@@ -50,16 +50,16 @@ public class FileSysTreeCrawler {
          * @return
          */
         protected String convertMD5ToHexStr(byte[] hash) {
-            String result = "";
+            StringBuffer result = new StringBuffer();
             // Converts the byte array containing the MD5 checksum to a hex
             for (int i = 0; i < hash.length; i++) {
                 // TODO: don't do this conversion -> make a MD5 class ->
                 // toString() returns hex string
                 // TODO: use string buffer
-                result += Integer.toString((hash[i] & 0xff) + 0x100, 16)
-                        .substring(1);
+                result.append(Integer.toString((hash[i] & 0xff) + 0x100, 16)
+                        .substring(1));
             }
-            return result;
+            return result.toString();
         }
     }
 
