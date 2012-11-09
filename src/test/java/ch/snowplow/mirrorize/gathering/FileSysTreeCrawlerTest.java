@@ -140,6 +140,120 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
                         .getHash());
     }
 
-    // TODO test the directory hash computation
+    public void testFileHashing() {
+        /*
+         * Files in the test directory and their MD5 sums (retrieved with the
+         * bash script src/test/scripts/md5_hashes_of_dir.sh):
+         * 
+         * ffec21f202ceb5a96ae19bebc1df46ee test_tree/subdir/file.txt
+         * b3a5ebcb4f8d273ee5d9ec33e51f7c6a test_tree/subdir/image2.jpg
+         * 2b2e214b302940c07863b273b4cd8e66 test_tree/textfile.txt
+         * 9e950c74df43ab18f52c72ad86935004 test_tree/image1.jpg
+         */
 
+        final String baseDir = "src/test/resources/test_tree/";
+        File tree = new File(baseDir);
+
+        FileSysTreeCrawler crawler = null;
+        try {
+            crawler = new FileSysTreeCrawler(tree, "MD5");
+        } catch (NoSuchAlgorithmException | InvalidTreeRootException e) {
+            fail("exception throwed during instantiation");
+        }
+        DirHashMap<String> dirHashMap = crawler.crawl();
+
+        // expect 6 file hashes (4 files, 1 subfolder, 1 root folder)
+        assertEquals(6, dirHashMap.getFileHashes().size());
+        assertEquals(6, dirHashMap.getHashes().size());
+        assertEquals(6, dirHashMap.getPaths().size());
+
+        // retrieve hash by path
+        assertEquals(
+                "ffec21f202ceb5a96ae19bebc1df46ee",
+                dirHashMap.getFileHashByPath(new PathBuilder().withPath(
+                        "subdir/file.txt").build()));
+        assertEquals(
+                "b3a5ebcb4f8d273ee5d9ec33e51f7c6a",
+                dirHashMap.getFileHashByPath(new PathBuilder().withPath(
+                        "subdir/image2.jpg").build()));
+        assertEquals(
+                "2b2e214b302940c07863b273b4cd8e66",
+                dirHashMap.getFileHashByPath(new PathBuilder().withPath(
+                        "textfile.txt").build()));
+        assertEquals(
+                "9e950c74df43ab18f52c72ad86935004",
+                dirHashMap.getFileHashByPath(new PathBuilder().withPath(
+                        "image1.jpg").build()));
+
+        // retrieve path by hash
+        assertEquals(new PathBuilder().withPath("subdir/file.txt").build(),
+                dirHashMap
+                        .getFilePathByHash("ffec21f202ceb5a96ae19bebc1df46ee"));
+
+        assertEquals(new PathBuilder().withPath("subdir/image2.jpg").build(),
+                dirHashMap
+                        .getFilePathByHash("b3a5ebcb4f8d273ee5d9ec33e51f7c6a"));
+
+        assertEquals(new PathBuilder().withPath("textfile.txt").build(),
+                dirHashMap
+                        .getFilePathByHash("2b2e214b302940c07863b273b4cd8e66"));
+
+        assertEquals(new PathBuilder().withPath("image1.jpg").build(),
+                dirHashMap
+                        .getFilePathByHash("9e950c74df43ab18f52c72ad86935004"));
+    }
+
+    public void testDirectoryHashing() {
+        /*
+         * Files in the test directory and their MD5 sums (retrieved with the
+         * bash script src/test/scripts/md5_hashes_of_dir.sh):
+         * 
+         * ffec21f202ceb5a96ae19bebc1df46ee test_tree/subdir/file.txt
+         * b3a5ebcb4f8d273ee5d9ec33e51f7c6a test_tree/subdir/image2.jpg
+         * 2b2e214b302940c07863b273b4cd8e66 test_tree/textfile.txt
+         * 9e950c74df43ab18f52c72ad86935004 test_tree/image1.jpg
+         * 
+         * directory hashes (lexicographical order of files paths matters):
+         * md5(subdir) := md5( concat(md5(subdir/file.txt),
+         * md5(subdir/image2.jpg))) = 28adf376ddd1d7f589f166b7efa60129
+         * 
+         * md5(rootdir) := md5(concat(md5(image1.jpg), md5(subdir),
+         * md5(textfile.txt))) = dcd1b6a3a9144c9d0840626ba8503fc5
+         */
+
+        final String baseDir = "src/test/resources/test_tree/";
+        File tree = new File(baseDir);
+
+        FileSysTreeCrawler crawler = null;
+        try {
+            crawler = new FileSysTreeCrawler(tree, "MD5");
+        } catch (NoSuchAlgorithmException | InvalidTreeRootException e) {
+            fail("exception throwed during instantiation");
+        }
+        DirHashMap<String> dirHashMap = crawler.crawl();
+
+        // expect 6 file hashes (4 files, 1 subfolder, 1 root folder)
+        assertEquals(6, dirHashMap.getFileHashes().size());
+        assertEquals(6, dirHashMap.getHashes().size());
+        assertEquals(6, dirHashMap.getPaths().size());
+
+        // retrieve hash by path
+        assertEquals(
+                "28adf376ddd1d7f589f166b7efa60129",
+                dirHashMap.getFileHashByPath(new PathBuilder().withPath(
+                        "subdir").build()));
+
+        assertEquals("dcd1b6a3a9144c9d0840626ba8503fc5",
+                dirHashMap.getFileHashByPath(new PathBuilder().withPath("")
+                        .build()));
+
+        // retrieve path by hash
+        assertEquals(new PathBuilder().withPath("subdir").build(),
+                dirHashMap
+                        .getFilePathByHash("28adf376ddd1d7f589f166b7efa60129"));
+
+        assertEquals(new PathBuilder().withPath("").build(),
+                dirHashMap
+                        .getFilePathByHash("dcd1b6a3a9144c9d0840626ba8503fc5"));
+    }
 }

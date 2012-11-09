@@ -65,6 +65,18 @@ public class DirHashMap<T extends Comparable<T>> {
     }
 
     /**
+     * Adds a new file hash to the data structure.
+     * 
+     * @param fileHash
+     *            FileHash to be added
+     */
+    public void add(FileHash<T> fileHash) {
+        fileHashes.add(fileHash);
+        fileByHash.put(fileHash.getHash(), fileHash.getPath());
+        fileByPath.put(fileHash.getPath(), fileHash.getHash());
+    }
+
+    /**
      * Adds all elements of the {@link ch.snowplow.mirrorize.common.DirHashMap}
      * provided as argument to this object. Just the object references are
      * copied, not the elements itself.
@@ -105,17 +117,17 @@ public class DirHashMap<T extends Comparable<T>> {
     /**
      * Serializes all hashes maintained in this object by concatenating all
      * string representations of the hashes. The order of concatenation is given
-     * since the list of hashes is sorted into ascending order, according to the
-     * natural ordering of its elements.
+     * since the hashes are ordered according to the lexicographical ascending
+     * order of their paths.
      * 
      * @return Serialized string of all hashes maintained in this object.
      */
     public String getSerializedHashes() {
-        ArrayList<T> fileHashes = new ArrayList<T>(fileByHash.keySet());
-        Collections.sort(fileHashes);
+        ArrayList<Path> sortedPaths = new ArrayList<Path>(fileByPath.keySet());
+        Collections.sort(sortedPaths);
         StringBuffer strBuf = new StringBuffer();
-        for (T fileHash : fileHashes) {
-            strBuf.append(fileHash.toString());
+        for (Path filePath : sortedPaths) {
+            strBuf.append(fileByPath.get(filePath));
         }
         return strBuf.toString();
     }

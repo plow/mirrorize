@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import ch.snowplow.mirrorize.MirrorizeMain;
 import ch.snowplow.mirrorize.common.DirHashMap;
+import ch.snowplow.mirrorize.common.FileHash;
 import ch.snowplow.mirrorize.common.Path;
 import ch.snowplow.mirrorize.common.Tools;
 
@@ -235,13 +236,15 @@ public class FileSysTreeCrawler {
      * @param hashStore
      *            Reference to the hash store which saves all hashes for all
      *            files/directories under the root element.
+     * @return Directory hash of the current directory.
      */
-    private void dirTraverse(File folder, int depth,
+    private FileHash<String> dirTraverse(File folder, int depth,
             DirHashMap<String> hashStore) {
 
         File[] listOfFiles = folder.listFiles();
-        DirHashMap<String> folderHashes = new DirHashMap<String>(
-                listOfFiles.length + 1); // '+ 1' for the folder hash
+        DirHashMap<String> dirHashes = new DirHashMap<String>();
+        DirHashMap<String> dirHashesCurrDepth = new DirHashMap<String>(
+                listOfFiles.length);
 
         for (int i = 0; i < listOfFiles.length; i++) {
             // iterate over all elements in the given folder
@@ -251,7 +254,7 @@ public class FileSysTreeCrawler {
             if (file.isDirectory()) {
                 // file is a directory
                 log.info(Tools.getSpaces(depth * 2) + file.getName() + "(dir)");
-                dirTraverse(file, depth + 1, folderHashes);
+                dirHashesCurrDepth.add(dirTraverse(file, depth + 1, dirHashes));
             }
 
             else if (file.isFile()) {
@@ -259,7 +262,10 @@ public class FileSysTreeCrawler {
                 try {
                     String fileHash = new FileMD5Hasher(file.getPath())
                             .getHash();
-                    folderHashes.add(fileHash, new Path(file.getPath()
+                    dirHashes.add(fileHash,
+                            new Path(file.getPath()
+                                    .substring(treeRootPrefixLen)));
+                    dirHashesCurrDepth.add(fileHash, new Path(file.getPath()
                             .substring(treeRootPrefixLen)));
                     log.info(Tools.getSpaces(depth * 2) + file.getName()
                             + "  (MD5:" + fileHash + ")");
@@ -271,21 +277,25 @@ public class FileSysTreeCrawler {
                 }
             } else {
                 log.warn("There lives something in your file system that is neither file, nor folder.");
-                return;
             }
         }
 
         // after all files are hashed: obtain a folder hash
         // TODO make an MD5Hasher subclass for creating directory hashes
         String folderHash = (new StringMD5Hasher(
-                folderHashes.getSerializedHashes())).getHash();
-        folderHashes.add(folderHash, new Path(depth == 0 ? "" : folder
-                .getPath().substring(treeRootPrefixLen)));
+                dirHashesCurrDepth.getSerializedHashes())).getHash();
+
+        FileHash<String> folderFileHash = new FileHash<String>(
+                new Path(depth == 0 ? "" : folder.getPath().substring(
+                        treeRootPrefixLen)), folderHash);
+        dirHashes.add(folderFileHash);
 
         // add all hashes of the directory to the hash store
-        hashStore.addAll(folderHashes);
+        hashStore.addAll(dirHashes);
         log.info((Tools.getSpaces(depth * 2) + folder.getName()
                 + "  (folder MD5:" + folderHash + ")"));
+
+        return folderFileHash;
     }
 
 }
