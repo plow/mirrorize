@@ -117,17 +117,18 @@ public class DirHashMap<T extends Comparable<T>> {
     /**
      * Serializes all hashes maintained in this object by concatenating all
      * string representations of the hashes. The order of concatenation is given
-     * since the hashes are ordered according to the lexicographical ascending
-     * order of their paths.
+     * by the natural order of the hashes, i.e., lexicographically ascending.
+     * The order intentionally does not depend on the files' paths since paths
+     * are sensitive to renaming.
      * 
      * @return Serialized string of all hashes maintained in this object.
      */
     public String getSerializedHashes() {
-        ArrayList<Path> sortedPaths = new ArrayList<Path>(fileByPath.keySet());
-        Collections.sort(sortedPaths);
+        ArrayList<T> sortedHashes = new ArrayList<T>(fileByHash.keySet());
+        Collections.sort(sortedHashes);
         StringBuffer strBuf = new StringBuffer();
-        for (Path filePath : sortedPaths) {
-            strBuf.append(fileByPath.get(filePath));
+        for (T fileHash : sortedHashes) {
+            strBuf.append(fileHash);
         }
         return strBuf.toString();
     }

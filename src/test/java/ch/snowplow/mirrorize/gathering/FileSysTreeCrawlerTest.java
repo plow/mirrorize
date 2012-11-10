@@ -213,12 +213,15 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
          * 2b2e214b302940c07863b273b4cd8e66 test_tree/textfile.txt
          * 9e950c74df43ab18f52c72ad86935004 test_tree/image1.jpg
          * 
-         * directory hashes (lexicographical order of files paths matters):
-         * md5(subdir) := md5( concat(md5(subdir/file.txt),
-         * md5(subdir/image2.jpg))) = 28adf376ddd1d7f589f166b7efa60129
+         * directory hashes are computed employing the lexicographical order of
+         * files hashes. The MD5 sums of the concatenated hashes can be
+         * computed, e.g., on www.webutils.pl/MD5_Calculator:
          * 
-         * md5(rootdir) := md5(concat(md5(image1.jpg), md5(subdir),
-         * md5(textfile.txt))) = dcd1b6a3a9144c9d0840626ba8503fc5
+         * md5(subdir) := md5( concat(b3a..., ffe...) =
+         * 1ca03e6446ead983cf7dbfe66b62b81e
+         * 
+         * md5(rootdir) := md5(concat(1ca..., 2be..., 9e9...)) =
+         * 97b22fd74a9e88e20ea4f43c39106f04
          */
 
         final String baseDir = "src/test/resources/test_tree/";
@@ -239,21 +242,21 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
 
         // retrieve hash by path
         assertEquals(
-                "28adf376ddd1d7f589f166b7efa60129",
+                "1ca03e6446ead983cf7dbfe66b62b81e",
                 dirHashMap.getFileHashByPath(new PathBuilder().withPath(
                         "subdir").build()));
 
-        assertEquals("dcd1b6a3a9144c9d0840626ba8503fc5",
+        assertEquals("97b22fd74a9e88e20ea4f43c39106f04",
                 dirHashMap.getFileHashByPath(new PathBuilder().withPath("")
                         .build()));
 
         // retrieve path by hash
         assertEquals(new PathBuilder().withPath("subdir").build(),
                 dirHashMap
-                        .getFilePathByHash("28adf376ddd1d7f589f166b7efa60129"));
+                        .getFilePathByHash("1ca03e6446ead983cf7dbfe66b62b81e"));
 
         assertEquals(new PathBuilder().withPath("").build(),
                 dirHashMap
-                        .getFilePathByHash("dcd1b6a3a9144c9d0840626ba8503fc5"));
+                        .getFilePathByHash("97b22fd74a9e88e20ea4f43c39106f04"));
     }
 }
