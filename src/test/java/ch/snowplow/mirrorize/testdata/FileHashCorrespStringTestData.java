@@ -10,7 +10,9 @@ public enum FileHashCorrespStringTestData {
     FILEHASH_REF("this/is/a/pat.h", "this/is/b/pat.h", "abcdef"),
 
     // hash code / equals
-    FILEHASH_SAME_HASH("this/is/another/p.ath", "this/is/another/p.ath",
+    FILEHASH_SAME_HASH(
+            "this/is/another/p.ath",
+            "this/is/another/p.ath",
             "abcdef"),
     FILEHASH_SAME_PATH1("this/is/a/pat.h", "this/path", "fedcba"),
     FILEHASH_SAME_PATH2("this/path", "this/is/b/pat.h", "fedcba"),

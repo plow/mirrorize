@@ -12,6 +12,7 @@ import ch.snowplow.mirrorize.common.Path;
 import ch.snowplow.mirrorize.gathering.FileSysTreeCrawler.StringMD5Hasher;
 import ch.snowplow.mirrorize.testdata.FileTestData;
 import ch.snowplow.mirrorize.testdata.builders.FileBuilder;
+import ch.snowplow.mirrorize.testdata.builders.FileSysTreeCrawlerBuilder;
 import ch.snowplow.mirrorize.testdata.builders.PathBuilder;
 
 public class FileSysTreeCrawlerTest extends FileSysTestCase {
@@ -201,6 +202,24 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
         assertEquals(new PathBuilder().withPath("image1.jpg").build(),
                 dirHashMap
                         .getFilePathByHash("9e950c74df43ab18f52c72ad86935004"));
+    }
+
+    public void testFileHashingTestTree() {
+        for (String folder : Arrays.asList("tree1", "tree2")) {
+            FileSysTreeCrawler crawler = new FileSysTreeCrawlerBuilder()
+                    .withTreeRoot(FileBuilder.DEFAULT_TEST_TREE_ROOT + folder)
+                    .withHashAlgo("MD5").build();
+
+            DirHashMap<String> treeMap = crawler.crawl();
+            for (FileTestData f : FileTestData.values()) {
+                if (f.getPath().startsWith(folder)) {
+                    Path p = new PathBuilder().withPath(
+                            f.getPath().substring(folder.length() + 1)).build();
+                    assertEquals(p, treeMap.getFilePathByHash(f.getHash()));
+                    assertEquals(f.getHash(), treeMap.getFileHashByPath(p));
+                }
+            }
+        }
     }
 
     public void testDirectoryHashing() {

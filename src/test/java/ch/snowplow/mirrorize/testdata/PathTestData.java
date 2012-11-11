@@ -5,10 +5,18 @@ import ch.snowplow.mirrorize.testdata.builders.PathBuilder;
 
 public enum PathTestData {
     // test path, name, depth
-    PATH_ABS_1("/an/absolute/pa.th", "/an/absolute/pa.th", "/an/absolute",
-            "pa.th", 2),
-    PATH_ABS_2("/an/absolute/pa.th/", "/an/absolute/pa.th", "/an/absolute",
-            "pa.th", 2),
+    PATH_ABS_1(
+            "/an/absolute/pa.th",
+            "/an/absolute/pa.th",
+            "/an/absolute",
+            "pa.th",
+            2),
+    PATH_ABS_2(
+            "/an/absolute/pa.th/",
+            "/an/absolute/pa.th",
+            "/an/absolute",
+            "pa.th",
+            2),
     PATH_REL_1("relative/pat.h", "relative/pat.h", "relative", "pat.h", 1),
     PATH_REL_2("relative/pat.h/", "relative/pat.h", "relative", "pat.h", 1),
     PATH_ROOT_1("roo.t", "roo.t", "", "roo.t", 0),

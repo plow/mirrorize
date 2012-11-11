@@ -18,11 +18,11 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         this.theirMap = theirMap;
     }
 
-    private Set<FileHash<T>> getDiffsOfHashes() {
+    public Set<FileHash<T>> getDiffsOfHashes() {
         return getDiffSetOfHashes(ourMap, theirMap);
     }
 
-    private Set<FileHash<T>> getDiffsOfPaths() {
+    public Set<FileHash<T>> getDiffsOfPaths() {
         return getDiffSetOfPaths(ourMap, theirMap);
     }
 

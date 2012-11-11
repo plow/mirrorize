@@ -57,4 +57,9 @@ public class FileHash<T> implements Comparable<FileHash<T>> {
     public int compareTo(FileHash<T> o) {
         return path.compareTo(o.getPath());
     }
+
+    @Override
+    public String toString() {
+        return hash.toString() + "<=>" + path.toString();
+    }
 }
