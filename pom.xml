@@ -30,6 +30,11 @@
   
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.3.2</version>
+      </plugin>
 	  <plugin>
 	    <groupId>org.apache.maven.plugins</groupId>
 	    <artifactId>maven-compiler-plugin</artifactId>
@@ -109,5 +114,11 @@
 	  </plugin>
 	</plugins>
   </reporting>
+  
+  <scm>
+    <connection>scm:git:git@github.com:plow/mirrorize.git</connection>
+    <url>scm:git:git@github.com:plow/mirrorize.git</url>
+    <developerConnection>scm:git:git@github.com:plow/mirrorize.git</developerConnection>
+  </scm>
     
 </project>
