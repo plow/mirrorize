@@ -1,5 +1,6 @@
 package ch.snowplow.mirrorize.analysis;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         }
         // subtract identical files, i.e. those also having corresponding hashes
         correspFiles.removeAll(theirMap.getFileHashes());
+        correspFiles.removeAllByPath(Arrays.asList(new Path("")));
         return correspFiles;
     }
 

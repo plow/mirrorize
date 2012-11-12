@@ -117,7 +117,7 @@ public enum FileTestData {
             "tree1/c/file_c1.txt",
             "content of the file file_c1.txt",
             "2e16e3cd9eb722587cc54a359dfacb8a"),
-    // subtree existing only in tree1
+    // subtree existing only in tree 1
     FILE_TR1_C1_D(
             "tree1/c_dir/file_c1d.txt",
             "content of the file file_c1d.txt",

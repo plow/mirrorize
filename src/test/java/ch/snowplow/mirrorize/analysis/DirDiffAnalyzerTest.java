@@ -11,6 +11,7 @@ import ch.snowplow.mirrorize.common.FileHashSet;
 import ch.snowplow.mirrorize.gathering.FileSysTreeCrawler;
 import ch.snowplow.mirrorize.testdata.builders.DirHashMapBuilder;
 import ch.snowplow.mirrorize.testdata.builders.FileBuilder;
+import ch.snowplow.mirrorize.testdata.builders.FileHashCorrespBuilder;
 import ch.snowplow.mirrorize.testdata.builders.FileSysTreeCrawlerBuilder;
 
 public class DirDiffAnalyzerTest extends FileSysTestCase {
@@ -104,21 +105,61 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
     }
 
     public void testGetModifiedFiles() {
+        // a
+        // a/file_a5.txt
+        // f
+        // f/file_f.txt
+        // f_dir
+        // f_dir/file_f1d.txt
+        // f_dir/file_f2d.txt
+
         FileHashSet<String> modFiles = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getModifiedFiles();
-        // TODO implement
+        assertAllContained(modFiles, "a", "a/file_a5.txt", "f", "f/file_f.txt",
+                "f_dir", "f_dir/file_f1d.txt", "f_dir/file_f2d.txt");
+    }
+
+    public void testGetMovedFiles() {
+        // a/file_a4_1.txt -> a/file_a4_2.txt
+        // e/file_e1.txt -> e/file_e2.txt
+        // e_dir1 -> e_dir2
+        // e_dir1/file_e1d.txt -> e_dir2/file_e1d.txt
+        // e_dir1/file_e2d.txt -> e_dir2/file_e2d.txt
+
+        FileHashSet<String> movFiles = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getMovedFiles();
+        String movedFilePaths[] = { "a/file_a4_1.txt", "e/file_e1.txt",
+                "e_dir1", "e_dir1/file_e1d.txt", "e_dir1/file_e2d.txt" };
+        String movedFilePathsCorresp[] = { "a/file_a4_2.txt", "e/file_e2.txt",
+                "e_dir2", "e_dir2/file_e1d.txt", "e_dir2/file_e2d.txt" };
+        assertAllContained(movFiles, movedFilePaths);
+        for (int i = 0; i < movedFilePaths.length; i++) {
+            movFiles.contains(new FileHashCorrespBuilder<String>("")
+                    .withPath1(movedFilePaths[i])
+                    .withPath2(movedFilePathsCorresp[i]).build());
+        }
     }
 
     public void testGetDeletedFiles() {
+        // a/file_a3.txt
+        // d
+        // d/file_d1.txt
+        // d_dir
+        // d_dir/file_d1d.txt
+        // d_dir/file_d2d.txt
+
         FileHashSet<String> delFiles = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getDeletedFiles();
-        // TODO implement
+        assertAllContained(delFiles, "a/file_a3.txt", "d", "d/file_d1.txt",
+                "d_dir", "d_dir/file_d1d.txt", "d_dir/file_d2d.txt");
     }
 
     public void testGetAllFiles() {
         FileHashSet<String> allFiles = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getAllFiles();
-        // TODO implement
+
+        // 26 is retrieved with bash command `find . | wc -l`
+        assertEquals(26, allFiles.size());
     }
 
     private void assertAllContained(FileHashSet<String> fileHashes,
