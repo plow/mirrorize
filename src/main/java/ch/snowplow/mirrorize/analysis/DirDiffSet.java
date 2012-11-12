@@ -1,20 +1,20 @@
 package ch.snowplow.mirrorize.analysis;
 
 import java.util.Iterator;
-import java.util.Set;
 import java.util.TreeSet;
 
 import ch.snowplow.mirrorize.common.FileHash;
 import ch.snowplow.mirrorize.common.FileHashCorresp;
+import ch.snowplow.mirrorize.common.FileHashSet;
 
-public class DirDiffSet<T> extends TreeSet<FileHash<T>> {
+public class DirDiffSet<T extends Comparable<T>> extends TreeSet<FileHash<T>> {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public DirDiffSet(Set<FileHash<T>> set) {
+    public DirDiffSet(FileHashSet<T> set) {
         // TODO maybe its possible to provide a SortedSet here for performance
         // reasons
         super(set);

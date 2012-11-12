@@ -1,9 +1,9 @@
 package ch.snowplow.mirrorize.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -19,7 +19,7 @@ import java.util.Set;
 public class DirHashMap<T extends Comparable<T>> {
 
     // TODO: value needs to be List<String> because of redundant files
-    private HashSet<FileHash<T>> fileHashes;
+    private FileHashSet<T> fileHashes;
     private HashMap<T, Path> fileByHash;
     private HashMap<Path, T> fileByPath;
 
@@ -28,7 +28,7 @@ public class DirHashMap<T extends Comparable<T>> {
      * collections.
      */
     public DirHashMap() {
-        fileHashes = new HashSet<FileHash<T>>();
+        fileHashes = new FileHashSet<T>();
         fileByHash = new HashMap<T, Path>();
         fileByPath = new HashMap<Path, T>();
     }
@@ -45,7 +45,7 @@ public class DirHashMap<T extends Comparable<T>> {
         // TODO initial size is problematic because the file hashes set doesn't
         // contain the same number of element as the hash maps in case there are
         // several files with the same content, i.e., with the same hash.
-        fileHashes = new HashSet<FileHash<T>>(initialSize);
+        fileHashes = new FileHashSet<T>(initialSize);
         fileByHash = new HashMap<T, Path>(initialSize);
         fileByPath = new HashMap<Path, T>(initialSize);
     }
@@ -149,8 +149,19 @@ public class DirHashMap<T extends Comparable<T>> {
         return strBuf.toString();
     }
 
-    public HashSet<FileHash<T>> getFileHashes() {
+    public FileHashSet<T> getFileHashes() {
         return fileHashes;
+    }
+
+    public FileHashSet<T> getFileHashes(Collection<Path> paths) {
+        FileHashSet<T> fhs = new FileHashSet<T>();
+        for (Path p : paths) {
+            T h;
+            if ((h = fileByPath.get(p)) != null) {
+                fhs.add(new FileHash<T>(p, h));
+            }
+        }
+        return fhs;
     }
 
     public Set<T> getHashes() {
@@ -159,6 +170,14 @@ public class DirHashMap<T extends Comparable<T>> {
 
     public Set<Path> getPaths() {
         return fileByPath.keySet();
+    }
+
+    public FileHash<T> getRoot() {
+        Path root = new Path("");
+        T hash = fileByPath.get(root);
+        if (hash == null)
+            return null;
+        return new FileHash<T>(root, hash);
     }
 
 }

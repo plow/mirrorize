@@ -1,6 +1,5 @@
 package ch.snowplow.mirrorize.common;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -122,7 +121,7 @@ public class DirHashMapTest extends TestCase {
         DirHashMap<String> map = new DirHashMapBuilder<String>()
                 .add("a", "a/pat.h").add("b", "b/pat.h").add("c", "c/pat.h")
                 .build();
-        HashSet<FileHash<String>> hashes = map.getFileHashes();
+        FileHashSet<String> hashes = map.getFileHashes();
         assertEquals(3, hashes.size());
         assertTrue(hashes.contains(new FileHashBuilder<String>("")
                 .withHash("a").withPath("a/pat.h").build()));
@@ -164,5 +163,17 @@ public class DirHashMapTest extends TestCase {
                 .contains(new PathBuilder().withPath("c/pat.h").build()));
         assertFalse(paths.contains(new PathBuilder().withPath("d/pat.h")
                 .build()));
+    }
+
+    public void testGetRoot() {
+        DirHashMap<String> map;
+        map = new DirHashMapBuilder<String>().add("a", "a/pat.h")
+                .add("b", "pat.h").add("c", "a/pat.z").build();
+        assertNull(map.getRoot());
+        map = new DirHashMapBuilder<String>().add("a", "a/pat.h")
+                .add("b", "pat.h").add("c", "").build();
+        FileHash<String> root = map.getRoot();
+        assertNotNull(root);
+        assertEquals(new PathBuilder().withPath("").build(), root.getPath());
     }
 }

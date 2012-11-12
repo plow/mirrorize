@@ -6,6 +6,7 @@ import java.util.Set;
 import ch.snowplow.mirrorize.common.DirHashMap;
 import ch.snowplow.mirrorize.common.FileHash;
 import ch.snowplow.mirrorize.common.FileHashCorresp;
+import ch.snowplow.mirrorize.common.FileHashSet;
 import ch.snowplow.mirrorize.common.Path;
 
 public class DirDiffAnalyzer<T extends Comparable<T>> {
@@ -18,28 +19,27 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         this.theirMap = theirMap;
     }
 
-    public Set<FileHash<T>> getDiffsOfHashes() {
+    public FileHashSet<T> getDiffsOfHashes() {
         return getDiffSetOfHashes(ourMap, theirMap);
     }
 
-    public Set<FileHash<T>> getDiffsOfPaths() {
+    public FileHashSet<T> getDiffsOfPaths() {
         return getDiffSetOfPaths(ourMap, theirMap);
     }
 
-    public Set<FileHash<T>> getNewFiles() {
+    public FileHashSet<T> getNewFiles() {
         // get all files without a corresponding file in their map (by hash)
-        Set<FileHash<T>> newFiles = new HashSet<FileHash<T>>(getDiffsOfHashes());
+        FileHashSet<T> newFiles = new FileHashSet<T>(getDiffsOfHashes());
         // subtract files without corresponding file in their map (by path)
-        newFiles.removeAll(getDiffsOfPaths());
+        newFiles.removeAllByPath(theirMap.getPaths());
         return newFiles;
     }
 
-    public Set<FileHash<T>> getModifiedFiles() {
+    public FileHashSet<T> getModifiedFiles() {
         // get all files in our map with corresponding path in their map
         Set<Path> correspPaths = new HashSet<Path>(ourMap.getPaths());
         correspPaths.retainAll(theirMap.getPaths());
-        HashSet<FileHash<T>> correspFiles = new HashSet<FileHash<T>>(
-                correspPaths.size());
+        FileHashSet<T> correspFiles = new FileHashSet<T>(correspPaths.size());
         for (Path p : correspPaths) {
             correspFiles.add(new FileHash<T>(p, ourMap.getFileHashByPath(p)));
         }
@@ -48,13 +48,12 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         return correspFiles;
     }
 
-    public Set<FileHashCorresp<T>> getMovedFiles() {
+    public FileHashSet<T> getMovedFiles() {
         // get set of corresponding hashes
         HashSet<T> ourHashes = new HashSet<T>(ourMap.getHashes());
         ourHashes.retainAll(theirMap.getHashes());
         // build list of correspondences to return
-        HashSet<FileHashCorresp<T>> correspFiles = new HashSet<FileHashCorresp<T>>(
-                ourHashes.size());
+        FileHashSet<T> correspFiles = new FileHashSet<T>(ourHashes.size());
         for (T hash : ourHashes) {
             correspFiles.add(new FileHashCorresp<T>(ourMap
                     .getFilePathByHash(hash), theirMap.getFilePathByHash(hash),
@@ -64,11 +63,11 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         return correspFiles;
     }
 
-    public Set<FileHash<T>> getDeletedFiles() {
+    public FileHashSet<T> getDeletedFiles() {
         // get all files in our map with corresponding path in their map
         Set<Path> nonCorrespPaths = new HashSet<Path>(theirMap.getPaths());
         nonCorrespPaths.removeAll(ourMap.getPaths());
-        HashSet<FileHash<T>> nonCorrespFilesByPath = new HashSet<FileHash<T>>();
+        FileHashSet<T> nonCorrespFilesByPath = new FileHashSet<T>();
         for (Path p : nonCorrespPaths) {
             nonCorrespFilesByPath.add(new FileHash<T>(p, theirMap
                     .getFileHashByPath(p)));
@@ -76,7 +75,7 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
 
         Set<T> nonCorrespHashes = new HashSet<T>(theirMap.getHashes());
         nonCorrespHashes.removeAll(ourMap.getHashes());
-        HashSet<FileHash<T>> nonCorrespFilesByHash = new HashSet<FileHash<T>>();
+        FileHashSet<T> nonCorrespFilesByHash = new FileHashSet<T>();
         for (T hash : nonCorrespHashes) {
             nonCorrespFilesByHash.add(new FileHash<T>(theirMap
                     .getFilePathByHash(hash), hash));
@@ -86,7 +85,7 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         return nonCorrespFilesByHash;
     }
 
-    public Set<FileHash<T>> getAllFiles() {
+    public FileHashSet<T> getAllFiles() {
         return ourMap.getFileHashes();
     }
 
@@ -101,11 +100,11 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
      *            directory hash map was compared to.
      * @return
      */
-    private Set<FileHash<T>> getDiffSetOfHashes(DirHashMap<T> ourMap,
+    private FileHashSet<T> getDiffSetOfHashes(DirHashMap<T> ourMap,
             DirHashMap<T> theirMap) {
         Set<T> ourHashes = new HashSet<T>(ourMap.getHashes());
         ourHashes.removeAll(theirMap.getHashes());
-        Set<FileHash<T>> diffSet = new HashSet<FileHash<T>>();
+        FileHashSet<T> diffSet = new FileHashSet<T>();
         for (T hash : ourHashes) {
             diffSet.add(new FileHash<T>(ourMap.getFilePathByHash(hash), hash));
         }
@@ -123,11 +122,11 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
      *            directory hash map was compared to.
      * @return
      */
-    private Set<FileHash<T>> getDiffSetOfPaths(DirHashMap<T> ourMap,
+    private FileHashSet<T> getDiffSetOfPaths(DirHashMap<T> ourMap,
             DirHashMap<T> theirMap) {
         Set<Path> ourPaths = new HashSet<Path>(ourMap.getPaths());
         ourPaths.removeAll(theirMap.getPaths());
-        Set<FileHash<T>> diffSet = new HashSet<FileHash<T>>();
+        FileHashSet<T> diffSet = new FileHashSet<T>();
         for (Path path : ourPaths) {
             diffSet.add(new FileHash<T>(path, ourMap.getFileHashByPath(path)));
         }
