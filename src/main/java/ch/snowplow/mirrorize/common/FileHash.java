@@ -30,10 +30,12 @@ public class FileHash<T> implements Comparable<FileHash<T>> {
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
+        }
         FileHash<T> other = null;
         try {
             other = (FileHash<T>) obj;
@@ -41,15 +43,19 @@ public class FileHash<T> implements Comparable<FileHash<T>> {
             return false;
         }
         if (hash == null) {
-            if (other.hash != null)
+            if (other.hash != null) {
                 return false;
-        } else if (!hash.equals(other.hash))
+            }
+        } else if (!hash.equals(other.hash)) {
             return false;
+        }
         if (path == null) {
-            if (other.path != null)
+            if (other.path != null) {
                 return false;
-        } else if (!path.equals(other.path))
+            }
+        } else if (!path.equals(other.path)) {
             return false;
+        }
         return true;
     }
 

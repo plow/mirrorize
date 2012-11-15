@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,8 +21,8 @@ public class DirHashMap<T extends Comparable<T>> {
 
     // TODO: value needs to be List<String> because of redundant files
     private FileHashSet<T> fileHashes;
-    private HashMap<T, Path> fileByHash;
-    private HashMap<Path, T> fileByPath;
+    private Map<T, Path> fileByHash;
+    private Map<Path, T> fileByPath;
 
     /**
      * Creates a new instance with the default initial size of the underlying
@@ -139,7 +140,7 @@ public class DirHashMap<T extends Comparable<T>> {
     @Override
     public String toString() {
         StringBuffer strBuf = new StringBuffer();
-        strBuf.append(fileByHash.size() + " file(s) hashed:\n");
+        strBuf.append(fileByHash.size()).append(" file(s) hashed:\n");
         for (T key : fileByHash.keySet()) {
             strBuf.append(key.toString());
             strBuf.append(" -> ");
@@ -156,8 +157,8 @@ public class DirHashMap<T extends Comparable<T>> {
     public FileHashSet<T> getFileHashes(Collection<Path> paths) {
         FileHashSet<T> fhs = new FileHashSet<T>();
         for (Path p : paths) {
-            T h;
-            if ((h = fileByPath.get(p)) != null) {
+            T h = fileByPath.get(p);
+            if (h != null) {
                 fhs.add(new FileHash<T>(p, h));
             }
         }
@@ -175,8 +176,9 @@ public class DirHashMap<T extends Comparable<T>> {
     public FileHash<T> getRoot() {
         Path root = new Path("");
         T hash = fileByPath.get(root);
-        if (hash == null)
+        if (hash == null) {
             return null;
+        }
         return new FileHash<T>(root, hash);
     }
 

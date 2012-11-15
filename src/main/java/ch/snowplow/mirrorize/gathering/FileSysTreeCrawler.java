@@ -11,7 +11,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
-import ch.snowplow.mirrorize.MirrorizeMain;
 import ch.snowplow.mirrorize.common.DirHashMap;
 import ch.snowplow.mirrorize.common.FileHash;
 import ch.snowplow.mirrorize.common.Path;
@@ -27,7 +26,7 @@ import ch.snowplow.mirrorize.common.Tools;
  */
 public class FileSysTreeCrawler {
 
-    private static Logger log = Logger.getLogger(MirrorizeMain.class);
+    private static Logger log = Logger.getLogger(FileSysTreeCrawler.class);
 
     /**
      * Abstract class intended for computing a MD5 hash on a particular entity
@@ -51,14 +50,17 @@ public class FileSysTreeCrawler {
          * @return
          */
         protected String convertMD5ToHexStr(byte[] hash) {
+            final int byteMax = 0xff;
+            final int twoPow8 = 0x100;
+            final int hexBase = 16;
             StringBuffer result = new StringBuffer();
             // Converts the byte array containing the MD5 checksum to a hex
             for (int i = 0; i < hash.length; i++) {
                 // TODO: don't do this conversion -> make a MD5 class ->
                 // toString() returns hex string
                 // TODO: use string buffer
-                result.append(Integer.toString((hash[i] & 0xff) + 0x100, 16)
-                        .substring(1));
+                result.append(Integer.toString((hash[i] & byteMax) + twoPow8,
+                        hexBase).substring(1));
             }
             return result.toString();
         }
@@ -70,7 +72,7 @@ public class FileSysTreeCrawler {
      * @author sf
      */
     class FileMD5Hasher extends MD5Hasher {
-        InputStream is;
+        private InputStream is;
 
         /**
          * Creates an instance, given the path of the file to be hashed.
@@ -106,13 +108,13 @@ public class FileSysTreeCrawler {
          */
         public byte[] createHash() throws IOException {
 
-            byte[] buffer = new byte[1024];
+            final int len = 1024;
+            byte[] buffer = new byte[len];
             int numRead;
             do {
                 numRead = is.read(buffer);
-                if (numRead > 0) {
-                    if (digest != null)
-                        digest.update(buffer, 0, numRead);
+                if (numRead > 0 && digest != null) {
+                    digest.update(buffer, 0, numRead);
                 }
             } while (numRead != -1);
 

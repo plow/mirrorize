@@ -1,6 +1,7 @@
 package ch.snowplow.mirrorize;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.security.NoSuchAlgorithmException;
 
@@ -18,10 +19,17 @@ import ch.snowplow.mirrorize.gathering.InvalidTreeRootException;
  * @author sf
  * 
  */
-public class MirrorizeMain {
+public final class MirrorizeMain {
 
     private static Logger log = Logger.getLogger(MirrorizeMain.class);
     private static final String CRYPTO_ALGO = "MD5";
+
+    /**
+     * Private empty constructor in order to prevent instantiation of this
+     * containing only a static entry point (main()).
+     */
+    private MirrorizeMain() {
+    }
 
     /**
      * Program entry point.
@@ -45,8 +53,9 @@ public class MirrorizeMain {
         // Immediately exit if the two roots of the trees to analyze are not
         // provided.
         if (args.length != 2) {
-            System.out
-                    .println("Usage: MD5Checksum /path/to/dir1 /path/to/dir2");
+            // Suppress Sonar violation with the following
+            PrintStream out = System.out;
+            out.println("Usage: MD5Checksum /path/to/dir1 /path/to/dir2");
             log.fatal("Too " + (args.length < 2 ? "few" : "much")
                     + " arguments. Program terminates.");
             System.exit(0);
@@ -69,17 +78,18 @@ public class MirrorizeMain {
         }
 
         // Print the results of the tree crawlers
-        log.info("---------------------");
+        final String dashes = "---------------------";
+        log.info(dashes);
         log.info("Tree root 1: " + args[0]);
         log.info("Tree root 2: " + args[1]);
-        log.info("---------------------");
+        log.info(dashes);
         DirHashMap<String> hashesTree1 = tree1Crawler.crawl();
-        log.info("---------------------");
+        log.info(dashes);
         DirHashMap<String> hashesTree2 = tree2Crawler.crawl();
-        log.info("---------------------");
+        log.info(dashes);
         log.trace(hashesTree1.toString());
         log.trace(hashesTree2.toString());
-        log.info("---------------------");
+        log.info(dashes);
 
         DirDiffAnalyzer<String> dirDiffAnalyzer = new DirDiffAnalyzer<String>(
                 hashesTree1, hashesTree2);
