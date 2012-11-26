@@ -158,8 +158,8 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
         FileHashSet<String> allFiles = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getAllFiles();
 
-        // 26 is retrieved with bash command `find . | wc -l`
-        assertEquals(26, allFiles.size());
+        // 29 is retrieved with bash command `find . | wc -l`
+        assertEquals(29, allFiles.size());
     }
 
     private void assertAllContained(FileHashSet<String> fileHashes,

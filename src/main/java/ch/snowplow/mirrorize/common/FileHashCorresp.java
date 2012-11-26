@@ -2,15 +2,15 @@ package ch.snowplow.mirrorize.common;
 
 public class FileHashCorresp<T> extends FileHash<T> {
 
-    private final Path correspPath;
+    private final PathSet correspPaths;
 
-    public FileHashCorresp(Path path1, Path path2, T hash) {
+    public FileHashCorresp(Path path1, T hash, PathSet correspPaths) {
         super(path1, hash);
-        this.correspPath = path2;
+        this.correspPaths = correspPaths;
     }
 
-    public Path getCorrespPath() {
-        return correspPath;
+    public PathSet getCorrespPath() {
+        return correspPaths;
     }
 
 }

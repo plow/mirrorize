@@ -30,7 +30,7 @@ public class FileHashCorrespBuilder<T> implements Buildable<FileHashCorresp<T>> 
     @Override
     public FileHashCorresp<T> build() {
         return new FileHashCorresp<T>(
-                new PathBuilder().withPath(path1).build(), new PathBuilder()
-                        .withPath(path2).build(), hash);
+                new PathBuilder().withPath(path1).build(), hash,
+                new PathSetBuilder().addPath(path2).build());
     }
 }

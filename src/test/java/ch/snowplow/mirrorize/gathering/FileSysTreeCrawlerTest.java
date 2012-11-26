@@ -9,6 +9,7 @@ import java.util.Set;
 import ch.snowplow.mirrorize.FileSysTestCase;
 import ch.snowplow.mirrorize.common.DirHashMap;
 import ch.snowplow.mirrorize.common.Path;
+import ch.snowplow.mirrorize.common.PathSet;
 import ch.snowplow.mirrorize.gathering.FileSysTreeCrawler.StringMD5Hasher;
 import ch.snowplow.mirrorize.testdata.FileTestData;
 import ch.snowplow.mirrorize.testdata.builders.FileBuilder;
@@ -24,6 +25,81 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             fail("invalid algorithm");
+        }
+    }
+
+    /**
+     * Test that only existing directory paths can be used as root folders.
+     */
+    public void testRootDirectories() {
+        // Root directories
+        File nonexistingDir = new File(FileBuilder.DEFAULT_TEST_TREE_ROOT
+                + "treeInvalid");
+        File existingFile = new File(FileBuilder.DEFAULT_TEST_TREE_ROOT
+                + "tree1/a/file_a1.txt");
+        File existingDir = new File(FileBuilder.DEFAULT_TEST_TREE_ROOT
+                + "tree1");
+        assertFalse(nonexistingDir.exists());
+        assertTrue(existingFile != null && !existingFile.isDirectory());
+        assertTrue(existingDir != null && existingDir.isDirectory());
+        File existingAbsDir = new File(existingDir.getAbsolutePath());
+        assertTrue(existingAbsDir != null && existingAbsDir.isDirectory());
+
+        final String HASH_ALGO = "MD5";
+
+        // verify that non-existing directory yields an exception
+        try {
+            new FileSysTreeCrawler(nonexistingDir, HASH_ALGO);
+            fail();
+        } catch (InvalidTreeRootException | NoSuchAlgorithmException e) {
+        }
+
+        // verify that a file instead of a directory yields an exception
+        try {
+            new FileSysTreeCrawler(existingFile, HASH_ALGO);
+            fail();
+        } catch (InvalidTreeRootException | NoSuchAlgorithmException e) {
+        }
+
+        // verify that an existing root directory does not yield an exception
+        try {
+            new FileSysTreeCrawler(existingDir, HASH_ALGO);
+        } catch (InvalidTreeRootException | NoSuchAlgorithmException e) {
+            fail();
+        }
+
+        // verify that an existing root directory specified as absolute path
+        // does not yield an exception
+        try {
+            new FileSysTreeCrawler(existingAbsDir, HASH_ALGO);
+        } catch (InvalidTreeRootException | NoSuchAlgorithmException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Test that all of the hash algorithms MD5, SHA-1, and SHA-256 can be used.
+     * These three algorithms must be supported by every implementation of the
+     * Java platform. Verify that unsupported algorithms yield an exception.
+     */
+    public void testHashAlgos() {
+
+        final String[] hashAlgos = { "MD5", "SHA-1", "SHA-256", "INVALID" };
+        final boolean[] validAlgos = { true, true, true, false };
+        final File rootDir = new File(FileBuilder.DEFAULT_TEST_TREE_ROOT
+                + "tree1");
+
+        for (int i = 0; i < hashAlgos.length; i++) {
+            try {
+                new FileSysTreeCrawler(rootDir, hashAlgos[i]);
+                if (!validAlgos[i]) {
+                    fail();
+                }
+            } catch (NoSuchAlgorithmException | InvalidTreeRootException e) {
+                if (validAlgos[i]) {
+                    fail();
+                }
+            }
         }
     }
 
@@ -164,7 +240,7 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
         DirHashMap<String> dirHashMap = crawler.crawl();
 
         // expect 6 file hashes (4 files, 1 subfolder, 1 root folder)
-        assertEquals(6, dirHashMap.getFileHashes().size());
+        assertEquals(6, dirHashMap.getFileHashSet().size());
         assertEquals(6, dirHashMap.getHashes().size());
         assertEquals(6, dirHashMap.getPaths().size());
 
@@ -187,21 +263,14 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
                         "image1.jpg").build()));
 
         // retrieve path by hash
-        assertEquals(new PathBuilder().withPath("subdir/file.txt").build(),
-                dirHashMap
-                        .getFilePathByHash("ffec21f202ceb5a96ae19bebc1df46ee"));
-
-        assertEquals(new PathBuilder().withPath("subdir/image2.jpg").build(),
-                dirHashMap
-                        .getFilePathByHash("b3a5ebcb4f8d273ee5d9ec33e51f7c6a"));
-
-        assertEquals(new PathBuilder().withPath("textfile.txt").build(),
-                dirHashMap
-                        .getFilePathByHash("2b2e214b302940c07863b273b4cd8e66"));
-
-        assertEquals(new PathBuilder().withPath("image1.jpg").build(),
-                dirHashMap
-                        .getFilePathByHash("9e950c74df43ab18f52c72ad86935004"));
+        assertPath(dirHashMap, "ffec21f202ceb5a96ae19bebc1df46ee",
+                new PathBuilder().withPath("subdir/file.txt").build());
+        assertPath(dirHashMap, "b3a5ebcb4f8d273ee5d9ec33e51f7c6a",
+                new PathBuilder().withPath("subdir/image2.jpg").build());
+        assertPath(dirHashMap, "2b2e214b302940c07863b273b4cd8e66",
+                new PathBuilder().withPath("textfile.txt").build());
+        assertPath(dirHashMap, "9e950c74df43ab18f52c72ad86935004",
+                new PathBuilder().withPath("image1.jpg").build());
     }
 
     public void testFileHashingTestTree() {
@@ -215,11 +284,39 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
                 if (f.getPath().startsWith(folder)) {
                     Path p = new PathBuilder().withPath(
                             f.getPath().substring(folder.length() + 1)).build();
-                    assertEquals(p, treeMap.getFilePathByHash(f.getHash()));
-                    assertEquals(f.getHash(), treeMap.getFileHashByPath(p));
+                    assertPath(treeMap, f.getHash(), p);
+
                 }
             }
         }
+    }
+
+    /**
+     * Asserts that the file with the provided path is contained in the provided
+     * {@link DirHashMap} and that the path maps to the provided hash. If more
+     * than one path maps to the hash, it's asserted that the provided path is
+     * one of them.
+     * 
+     * @param dirHashMap
+     *            Directory hash map
+     * @param hash
+     *            Hash
+     * @param path
+     *            Path
+     */
+    private void assertPath(DirHashMap<String> dirHashMap, String hash,
+            Path path) {
+        assertNotNull(dirHashMap.getFilePathByHash(hash));
+        assertTrue(dirHashMap.getFilePathByHash(hash) instanceof PathSet);
+        assertTrue(dirHashMap.getFilePathByHash(hash).size() >= 1);
+        int equalPaths = 0;
+        for (Path pathCurr : dirHashMap.getFilePathByHash(hash)) {
+            assertEquals(hash, dirHashMap.getFileHashByPath(pathCurr));
+            if (path.equals(pathCurr)) {
+                equalPaths++;
+            }
+        }
+        assertEquals(1, equalPaths);
     }
 
     public void testDirectoryHashing() {
@@ -255,7 +352,7 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
         DirHashMap<String> dirHashMap = crawler.crawl();
 
         // expect 6 file hashes (4 files, 1 subfolder, 1 root folder)
-        assertEquals(6, dirHashMap.getFileHashes().size());
+        assertEquals(6, dirHashMap.getFileHashSet().size());
         assertEquals(6, dirHashMap.getHashes().size());
         assertEquals(6, dirHashMap.getPaths().size());
 
@@ -270,12 +367,9 @@ public class FileSysTreeCrawlerTest extends FileSysTestCase {
                         .build()));
 
         // retrieve path by hash
-        assertEquals(new PathBuilder().withPath("subdir").build(),
-                dirHashMap
-                        .getFilePathByHash("1ca03e6446ead983cf7dbfe66b62b81e"));
-
-        assertEquals(new PathBuilder().withPath("").build(),
-                dirHashMap
-                        .getFilePathByHash("97b22fd74a9e88e20ea4f43c39106f04"));
+        assertPath(dirHashMap, "1ca03e6446ead983cf7dbfe66b62b81e",
+                new PathBuilder().withPath("subdir").build());
+        assertPath(dirHashMap, "97b22fd74a9e88e20ea4f43c39106f04",
+                new PathBuilder().withPath("").build());
     }
 }

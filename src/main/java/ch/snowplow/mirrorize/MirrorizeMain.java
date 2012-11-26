@@ -91,12 +91,16 @@ public final class MirrorizeMain {
         log.trace(hashesTree2.toString());
         log.info(dashes);
 
+        // DirDiffAnalyzer2<String> dirDiffAnalyzer = new DirDiffAnalyzer2<>(
+        // hashesTree1, hashesTree2);
+        // dirDiffAnalyzer.analyze();
+
         DirDiffAnalyzer<String> dirDiffAnalyzer = new DirDiffAnalyzer<String>(
                 hashesTree1, hashesTree2);
-        log.info("Files with hashes that only appear in our tree: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfHashes()));
-        log.info("Files with paths that only appear in our tree: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfPaths()));
+        // log.info("Files with hashes that only appear in our tree: \n" + new
+        // DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfHashes()));
+        // log.info("Files with paths that only appear in our tree: \n" + new
+        // DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfPaths()));
         log.info("New files: \n"
                 + new DirDiffSet<String>(dirDiffAnalyzer.getNewFiles()));
         log.info("Modified files: \n"
@@ -104,10 +108,9 @@ public final class MirrorizeMain {
         log.info("Deleted files: \n"
                 + new DirDiffSet<String>(dirDiffAnalyzer.getDeletedFiles()));
         log.info("Moved files: \n"
-                + new DirDiffSet(dirDiffAnalyzer.getMovedFiles()));
-        // log.info("      All files: \n"
-        // + new DirDiffSet(dirDiffAnalyzer.getAllFiles()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getMovedFiles())); //
+        // log.info("      All files: \n" // + new
+        // DirDiffSet(dirDiffAnalyzer.getAllFiles()));
 
     }
-
 }

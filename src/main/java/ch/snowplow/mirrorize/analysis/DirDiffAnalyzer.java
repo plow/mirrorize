@@ -20,75 +20,86 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         this.theirMap = theirMap;
     }
 
-    public FileHashSet<T> getDiffsOfHashes() {
-        return getDiffSetOfHashes(ourMap, theirMap);
-    }
-
-    public FileHashSet<T> getDiffsOfPaths() {
-        return getDiffSetOfPaths(ourMap, theirMap);
-    }
-
     public FileHashSet<T> getNewFiles() {
+        // TODO: maybe it's more efficient to first removeall by path
         // get all files without a corresponding file in their map (by hash)
-        FileHashSet<T> newFiles = new FileHashSet<T>(getDiffsOfHashes());
+        FileHashSet<T> newFiles = getDiffSetOfHashes(ourMap, theirMap);
         // subtract files without corresponding file in their map (by path)
         newFiles.removeAllByPath(theirMap.getPaths());
         return newFiles;
+    }
+
+    public FileHashSet<T> getDeletedFiles() {
+        // get all files in their map without corresponding path in our map (by
+        // path)
+        FileHashSet<T> nonCorrespFilesByPath = getDiffSetOfPaths(theirMap,
+                ourMap);
+
+        // get all files in their map without corresponding hash in our map
+        Set<T> nonCorrespHashes = new HashSet<T>(theirMap.getHashes());
+        nonCorrespHashes.removeAll(ourMap.getHashes());
+        FileHashSet<T> nonCorrespFilesByHash = new FileHashSet<T>();
+        for (T hash : nonCorrespHashes) {
+            for (Path path : theirMap.getFilePathByHash(hash)) {
+                nonCorrespFilesByHash.add(new FileHash<T>(path, hash));
+            }
+        }
+
+        // return set with those files having neither a corresponding path nor a
+        // corresponding hash in our map
+        nonCorrespFilesByHash.retainAll(nonCorrespFilesByPath);
+        return nonCorrespFilesByHash;
     }
 
     public FileHashSet<T> getModifiedFiles() {
         // get all files in our map with corresponding path in their map
         Set<Path> correspPaths = new HashSet<Path>(ourMap.getPaths());
         correspPaths.retainAll(theirMap.getPaths());
+
+        // make file hash set out of corresponding paths
         FileHashSet<T> correspFiles = new FileHashSet<T>(correspPaths.size());
-        for (Path p : correspPaths) {
-            correspFiles.add(new FileHash<T>(p, ourMap.getFileHashByPath(p)));
+        for (Path path : correspPaths) {
+            T ourHash = ourMap.getFileHashByPath(path);
+            if (!ourHash.equals(theirMap.getFileHashByPath(path))) {
+                // add file if files are not identical
+                correspFiles.add(new FileHash<T>(path, ourHash));
+            }
         }
-        // subtract identical files, i.e. those also having corresponding hashes
-        correspFiles.removeAll(theirMap.getFileHashes());
+        // subtract root element which can't be modified
         correspFiles.removeAllByPath(Arrays.asList(new Path("")));
         return correspFiles;
     }
 
     public FileHashSet<T> getMovedFiles() {
         // get set of corresponding hashes
-        HashSet<T> ourHashes = new HashSet<T>(ourMap.getHashes());
-        ourHashes.retainAll(theirMap.getHashes());
+        HashSet<T> identicalHashes = new HashSet<T>(ourMap.getHashes());
+        identicalHashes.retainAll(theirMap.getHashes());
         // build list of correspondences to return
-        FileHashSet<T> correspFiles = new FileHashSet<T>(ourHashes.size());
-        for (T hash : ourHashes) {
-            correspFiles.add(new FileHashCorresp<T>(ourMap
-                    .getFilePathByHash(hash), theirMap.getFilePathByHash(hash),
-                    hash));
-        }
-        correspFiles.removeAll(theirMap.getFileHashes());
-        return correspFiles;
-    }
-
-    public FileHashSet<T> getDeletedFiles() {
-        // get all files in our map with corresponding path in their map
-        Set<Path> nonCorrespPaths = new HashSet<Path>(theirMap.getPaths());
-        nonCorrespPaths.removeAll(ourMap.getPaths());
-        FileHashSet<T> nonCorrespFilesByPath = new FileHashSet<T>();
-        for (Path p : nonCorrespPaths) {
-            nonCorrespFilesByPath.add(new FileHash<T>(p, theirMap
-                    .getFileHashByPath(p)));
+        // FIXME initial capacity is >=ourHashes.size() if identical files are
+        // involved
+        FileHashSet<T> movedFiles = new FileHashSet<T>(identicalHashes.size());
+        for (T hash : identicalHashes) {
+            for (Path ourPath : ourMap.getFilePathByHash(hash)) {
+                movedFiles.add(new FileHashCorresp<T>(ourPath, hash, theirMap
+                        .getFilePathByHash(hash)));
+            }
         }
 
-        Set<T> nonCorrespHashes = new HashSet<T>(theirMap.getHashes());
-        nonCorrespHashes.removeAll(ourMap.getHashes());
-        FileHashSet<T> nonCorrespFilesByHash = new FileHashSet<T>();
-        for (T hash : nonCorrespHashes) {
-            nonCorrespFilesByHash.add(new FileHash<T>(theirMap
-                    .getFilePathByHash(hash), hash));
-        }
-
-        nonCorrespFilesByHash.retainAll(nonCorrespFilesByPath);
-        return nonCorrespFilesByHash;
+        // remove correspondences
+        movedFiles.removeAll(theirMap.getFileHashSet());
+        return movedFiles;
     }
 
     public FileHashSet<T> getAllFiles() {
-        return ourMap.getFileHashes();
+        return ourMap.getFileHashSet();
+    }
+
+    public FileHashSet<T> getDiffsOfHashes() {
+        return getDiffSetOfHashes(ourMap, theirMap);
+    }
+
+    public FileHashSet<T> getDiffsOfPaths() {
+        return getDiffSetOfPaths(ourMap, theirMap);
     }
 
     /**
@@ -104,13 +115,16 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
      */
     private FileHashSet<T> getDiffSetOfHashes(DirHashMap<T> ourMap,
             DirHashMap<T> theirMap) {
-        Set<T> ourHashes = new HashSet<T>(ourMap.getHashes());
-        ourHashes.removeAll(theirMap.getHashes());
-        FileHashSet<T> diffSet = new FileHashSet<T>();
-        for (T hash : ourHashes) {
-            diffSet.add(new FileHash<T>(ourMap.getFilePathByHash(hash), hash));
+
+        Set<T> diffHashes = new HashSet<T>(ourMap.getHashes());
+        diffHashes.removeAll(theirMap.getHashes());
+        FileHashSet<T> diffFiles = new FileHashSet<T>();
+        for (T hash : diffHashes) {
+            for (Path path : ourMap.getFilePathByHash(hash)) {
+                diffFiles.add(new FileHash<T>(path, hash));
+            }
         }
-        return diffSet;
+        return diffFiles;
     }
 
     /**

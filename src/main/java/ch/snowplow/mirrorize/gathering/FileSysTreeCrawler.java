@@ -58,7 +58,6 @@ public class FileSysTreeCrawler {
             for (int i = 0; i < hash.length; i++) {
                 // TODO: don't do this conversion -> make a MD5 class ->
                 // toString() returns hex string
-                // TODO: use string buffer
                 result.append(Integer.toString((hash[i] & byteMax) + twoPow8,
                         hexBase).substring(1));
             }

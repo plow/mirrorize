@@ -19,9 +19,8 @@ import java.util.Set;
  */
 public class DirHashMap<T extends Comparable<T>> {
 
-    // TODO: value needs to be List<String> because of redundant files
     private FileHashSet<T> fileHashes;
-    private Map<T, Path> fileByHash;
+    private Map<T, PathSet> fileByHash;
     private Map<Path, T> fileByPath;
 
     /**
@@ -30,7 +29,7 @@ public class DirHashMap<T extends Comparable<T>> {
      */
     public DirHashMap() {
         fileHashes = new FileHashSet<T>();
-        fileByHash = new HashMap<T, Path>();
+        fileByHash = new HashMap<T, PathSet>();
         fileByPath = new HashMap<Path, T>();
     }
 
@@ -47,7 +46,7 @@ public class DirHashMap<T extends Comparable<T>> {
         // contain the same number of element as the hash maps in case there are
         // several files with the same content, i.e., with the same hash.
         fileHashes = new FileHashSet<T>(initialSize);
-        fileByHash = new HashMap<T, Path>(initialSize);
+        fileByHash = new HashMap<T, PathSet>(initialSize);
         fileByPath = new HashMap<Path, T>(initialSize);
     }
 
@@ -61,7 +60,12 @@ public class DirHashMap<T extends Comparable<T>> {
      */
     public void add(T fileHash, Path filePath) {
         fileHashes.add(new FileHash<T>(filePath, fileHash));
-        fileByHash.put(fileHash, filePath);
+        PathSet ps = fileByHash.get(fileHash);
+        if (ps == null) {
+            fileByHash.put(fileHash, new PathSet(filePath));
+        } else {
+            ps.add(filePath);
+        }
         fileByPath.put(filePath, fileHash);
     }
 
@@ -73,7 +77,12 @@ public class DirHashMap<T extends Comparable<T>> {
      */
     public void add(FileHash<T> fileHash) {
         fileHashes.add(fileHash);
-        fileByHash.put(fileHash.getHash(), fileHash.getPath());
+        PathSet ps = fileByHash.get(fileHash.getHash());
+        if (ps == null) {
+            fileByHash.put(fileHash.getHash(), new PathSet(fileHash.getPath()));
+        } else {
+            ps.add(fileHash.getPath());
+        }
         fileByPath.put(fileHash.getPath(), fileHash.getHash());
     }
 
@@ -86,9 +95,11 @@ public class DirHashMap<T extends Comparable<T>> {
      *            The instance to copy all elements from.
      */
     public void addAll(DirHashMap<T> hashes) {
-        fileHashes.addAll(hashes.fileHashes);
-        fileByHash.putAll(hashes.fileByHash);
-        fileByPath.putAll(hashes.fileByPath);
+        // Cannot just employ addAll of backing HashMaps because of identical
+        // files with different pahts.
+        for (FileHash<T> fileHash : hashes.getFileHashSet()) {
+            add(fileHash);
+        }
     }
 
     /**
@@ -99,7 +110,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            Hash of the file
      * @return Path of file with the specified hash.
      */
-    public Path getFilePathByHash(T hash) {
+    public PathSet getFilePathByHash(T hash) {
         return fileByHash.get(hash);
     }
 
@@ -150,7 +161,7 @@ public class DirHashMap<T extends Comparable<T>> {
         return strBuf.toString();
     }
 
-    public FileHashSet<T> getFileHashes() {
+    public FileHashSet<T> getFileHashSet() {
         return fileHashes;
     }
 

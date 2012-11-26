@@ -16,26 +16,24 @@ public class PathSetTest extends TestCase {
 
     @Override
     public void setUp() {
-        ps = new PathSet();
+        ps = new PathSet(new PathBuilder().withPath("a/pat.h").build());
     }
 
     public void testNewAndAddAndSizeAndEmpty() {
         assertNotNull(ps);
-        assertEquals(0, ps.size());
-        assertTrue(ps.isEmpty());
-        assertTrue(ps.add(new PathBuilder().withPath("a/pat.h").build()));
         assertEquals(1, ps.size());
         assertFalse(ps.isEmpty());
+
         assertTrue(ps.add(new PathBuilder().withPath("b/pat.h").build()));
         assertEquals(2, ps.size());
         assertFalse(ps.isEmpty());
+
         assertFalse(ps.add(new PathBuilder().withPath("a/pat.h").build()));
         assertEquals(2, ps.size());
         assertFalse(ps.isEmpty());
     }
 
     public void testContains() {
-        assertTrue(ps.add(new PathBuilder().withPath("a/pat.h").build()));
         assertTrue(ps.add(new PathBuilder().withPath("b/pat.h").build()));
         assertTrue(ps.contains(new PathBuilder().withPath("a/pat.h").build()));
         assertTrue(ps.contains(new PathBuilder().withPath("b/pat.h").build()));
@@ -43,8 +41,24 @@ public class PathSetTest extends TestCase {
         assertFalse(ps.contains("a string object"));
     }
 
+    public void testContainsAll() {
+        ps.add(new PathBuilder().withPath("b/pat.h").build());
+        assertTrue(ps.containsAll(Arrays.asList(new PathBuilder().withPath(
+                "a/pat.h").build())));
+        assertTrue(ps.containsAll(Arrays.asList(
+                new PathBuilder().withPath("a/pat.h").build(),
+                new PathBuilder().withPath("b/pat.h").build())));
+        assertFalse(ps.containsAll(Arrays.asList(
+                new PathBuilder().withPath("a/pat.h").build(),
+                new PathBuilder().withPath("b/pat.h").build(),
+                new PathBuilder().withPath("c/pat.h").build())));
+        assertFalse(ps.containsAll(Arrays.asList(
+                new PathBuilder().withPath("a/pat.h").build(),
+                new PathBuilder().withPath("b/pat.h").build(),
+                "a string object")));
+    }
+
     public void testIterator() {
-        assertTrue(ps.add(new PathBuilder().withPath("a/pat.h").build()));
         assertIteratorLenght(ps.iterator(), 1);
         assertTrue(ps.add(new PathBuilder().withPath("b/pat.h").build()));
         assertIteratorLenght(ps.iterator(), 2);
@@ -62,7 +76,6 @@ public class PathSetTest extends TestCase {
     }
 
     public void testToArray() {
-        assertTrue(ps.add(new PathBuilder().withPath("a/pat.h").build()));
         assertTrue(ps.add(new PathBuilder().withPath("b/pat.h").build()));
         Object[] array = ps.toArray();
         assertEquals(2, array.length);
@@ -71,7 +84,6 @@ public class PathSetTest extends TestCase {
     }
 
     public void testToArrayT() {
-        ps.add(new PathBuilder().withPath("a/pat.h").build());
         ps.add(new PathBuilder().withPath("b/pat.h").build());
         Path[] paths = new Path[2];
         Path[] pathsRet = ps.toArray(paths);
@@ -120,30 +132,12 @@ public class PathSetTest extends TestCase {
     }
 
     public void testRemove() {
-        boolean catched = false;
-        ps.add(new PathBuilder().withPath("a/pat.h").build());
-        try {
-            ps.remove(new PathBuilder().withPath("a/pat.h").build());
-        } catch (UnsupportedOperationException e) {
-            catched = true;
-        }
-        if (!catched) {
-            fail("UnsupportedOperationException expected");
-        }
-    }
-
-    public void testContainsAll() {
-        ps.add(new PathBuilder().withPath("a/pat.h").build());
-        ps.add(new PathBuilder().withPath("b/pat.h").build());
-        assertTrue(ps.containsAll(Arrays.asList(new PathBuilder().withPath(
-                "a/pat.h").build())));
-        assertTrue(ps.containsAll(Arrays.asList(
-                new PathBuilder().withPath("a/pat.h").build(),
-                new PathBuilder().withPath("b/pat.h").build())));
-        assertFalse(ps.containsAll(Arrays.asList(
-                new PathBuilder().withPath("a/pat.h").build(),
-                new PathBuilder().withPath("b/pat.h").build(),
-                new PathBuilder().withPath("c/pat.h").build())));
+        assertThrown(new Executor() {
+            @Override
+            public void execute() {
+                ps.remove(new PathBuilder().withPath("a/pat.h").build());
+            }
+        });
     }
 
     public void testAddAll() {

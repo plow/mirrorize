@@ -50,6 +50,9 @@
         <configuration>
           <excludes>
             <exclude>
+              **/AllTestCases.java  <!-- test suite containing all test cases -->
+            </exclude>
+            <exclude>
               **/FileSysTestCase.java  <!-- parent class of some test cases -->
             </exclude>
           </excludes>

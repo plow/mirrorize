@@ -19,8 +19,9 @@ public class PathSet implements Set<Path> {
 
     ArrayList<Path> paths;
 
-    public PathSet() {
+    public PathSet(Path p) {
         paths = new ArrayList<Path>(1);
+        paths.add(p);
     }
 
     @Override
@@ -102,6 +103,26 @@ public class PathSet implements Set<Path> {
     @Override
     public void clear() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer strBuf = new StringBuffer();
+        strBuf.append("[");
+        strBuf.append(this.getClass().getSimpleName());
+        strBuf.append(": ");
+        boolean first = true;
+        for (Path p : paths) {
+            if (first) {
+                first = false;
+            } else {
+                strBuf.append(" | ");
+            }
+            strBuf.append(p.toString());
+        }
+        strBuf.append("]");
+
+        return strBuf.toString();
     }
 
 }
