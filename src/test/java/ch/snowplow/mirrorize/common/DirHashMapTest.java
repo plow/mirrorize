@@ -120,6 +120,11 @@ public class DirHashMapTest extends TestCase {
                 .add("f", "b/pat.b").add("e", "b/pat.a").add("d", "b")
                 .add("c", "a/pat.b").add("b", "a/pat.a").add("a", "a").build();
         assertEquals("abcdefghi", map2.getSerializedHashes());
+
+        DirHashMap<String> map3 = new DirHashMapBuilder<String>()
+                .add("b", "d/pat.h").add("a", "a/pat.h").add("a", "b/pat.h")
+                .add("a", "c/pat.h").build();
+        assertEquals("aaab", map3.getSerializedHashes());
     }
 
     public void testToString() {

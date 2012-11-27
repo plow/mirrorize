@@ -140,7 +140,9 @@ public class DirHashMap<T extends Comparable<T>> {
         Collections.sort(sortedHashes);
         StringBuffer strBuf = new StringBuffer();
         for (T fileHash : sortedHashes) {
-            strBuf.append(fileHash);
+            for (int i = 0; i < fileByHash.get(fileHash).size(); i++) {
+                strBuf.append(fileHash);
+            }
         }
         return strBuf.toString();
     }

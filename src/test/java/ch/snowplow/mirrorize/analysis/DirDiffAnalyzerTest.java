@@ -58,6 +58,14 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
         // f_dir
         // f_dir/file_f1d.txt
         // f_dir/file_f2d.txt
+        // h
+        // h/h1
+        // h/h2
+        // h/h3
+        // h/h4
+        // h/h5
+        // h/h6
+        // h/h7
 
         FileHashSet<String> hashDiffs = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getDiffsOfHashes();
@@ -65,7 +73,8 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
                 "a/file_a5.txt", "c", "c/file_c1.txt", "c_dir",
                 "c_dir/file_c1d.txt", "c_dir/file_c2d.txt", "f",
                 "f/file_f.txt", "f_dir", "f_dir/file_f1d.txt",
-                "f_dir/file_f2d.txt");
+                "f_dir/file_f2d.txt", "h", "h/h1", "h/h2", "h/h3", "h/h4",
+                "h/h5", "h/h6", "h/h7");
 
     }
 
@@ -81,13 +90,24 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
         // e_dir1
         // e_dir1/file_e1d.txt
         // e_dir1/file_e2d.txt
+        // h/h1/file_h11.txt
+        // h/h3/file_h31.txt
+        // h/h3/file_h32.txt
+        // h/h4/file_h42.txt
+        // h/h5/file_h52.txt
+        // h/h6/file_h62.txt
+        // h/h6/file_h63.txt
+        // h/h6/file_h64.txt
 
         FileHashSet<String> pathDiffs = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getDiffsOfPaths();
         assertAllContained(pathDiffs, "a/file_a2.txt", "a/file_a4_1.txt", "c",
                 "c/file_c1.txt", "c_dir", "c_dir/file_c1d.txt",
                 "c_dir/file_c2d.txt", "e/file_e1.txt", "e_dir1",
-                "e_dir1/file_e1d.txt", "e_dir1/file_e2d.txt");
+                "e_dir1/file_e1d.txt", "e_dir1/file_e2d.txt",
+                "h/h1/file_h11.txt", "h/h3/file_h31.txt", "h/h3/file_h32.txt",
+                "h/h4/file_h42.txt", "h/h5/file_h52.txt", "h/h6/file_h62.txt",
+                "h/h6/file_h63.txt", "h/h6/file_h64.txt");
     }
 
     public void testGetNewFiles() {
@@ -112,11 +132,22 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
         // f_dir
         // f_dir/file_f1d.txt
         // f_dir/file_f2d.txt
+        // h
+        // h/h1
+        // h/h2
+        // h/h3
+        // h/h4
+        // h/h5
+        // h/h6
+        // h/h7
+        // h/h7/file_h71.txt
 
         FileHashSet<String> modFiles = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getModifiedFiles();
         assertAllContained(modFiles, "a", "a/file_a5.txt", "f", "f/file_f.txt",
-                "f_dir", "f_dir/file_f1d.txt", "f_dir/file_f2d.txt");
+                "f_dir", "f_dir/file_f1d.txt", "f_dir/file_f2d.txt", "h",
+                "h/h1", "h/h2", "h/h3", "h/h4", "h/h5", "h/h6", "h/h7",
+                "h/h7/file_h71.txt");
     }
 
     public void testGetMovedFiles() {
@@ -158,8 +189,8 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
         FileHashSet<String> allFiles = new DirDiffAnalyzer<String>(ourMap,
                 theirMap).getAllFiles();
 
-        // 29 is retrieved with bash command `find . | wc -l`
-        assertEquals(29, allFiles.size());
+        // 50 is retrieved with bash command `find . | wc -l`
+        assertEquals(50, allFiles.size());
     }
 
     private void assertAllContained(FileHashSet<String> fileHashes,

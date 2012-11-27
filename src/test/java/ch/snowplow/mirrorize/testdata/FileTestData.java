@@ -29,8 +29,8 @@ public enum FileTestData {
      * 4212c6a5cb4c0562bd872844d8415d31 ./tree1/f/file_f.txt
      * 74e7fe94e14212b15a60f473237f6b0d ./tree1/g/file_g1.txt
      * 74e7fe94e14212b15a60f473237f6b0d ./tree1/g/file_g2.txt
-     * 47910b93c6da4e985ff5822087eed430 ./tree1/h/h1/file_h11.txt
-     * 162656b5b1217bdea3658d132879e30a ./tree1/h/h2/file_h21.txt
+     * 1c8e3e2f45da4c54c2470032fc7dbf53 ./tree1/h/h1/file_h11.txt
+     * e15fb61422728fd33dbe611c729e83db ./tree1/h/h2/file_h21.txt
      * 8f39359c631f7a3946544949284c8cbe ./tree1/h/h3/file_h31.txt
      * 8f39359c631f7a3946544949284c8cbe ./tree1/h/h3/file_h32.txt
      * 724b0d02b6eac3be283f4623acc4907e ./tree1/h/h4/file_h41.txt
@@ -61,15 +61,16 @@ public enum FileTestData {
      * 21bdd4e7a3da5269a15612ebba077089 ./tree2/f/file_f.txt
      * 74e7fe94e14212b15a60f473237f6b0d ./tree2/g/file_g1.txt
      * 74e7fe94e14212b15a60f473237f6b0d ./tree2/g/file_g2.txt
-     * 47910b93c6da4e985ff5822087eed430 ./tree2/h/h1/file_h12.txt
-     * 47910b93c6da4e985ff5822087eed430 ./tree2/h/h1/file_h13.txt
-     * 162656b5b1217bdea3658d132879e30a ./tree2/h/h2/file_h21.txt
-     * 162656b5b1217bdea3658d132879e30a ./tree2/h/h2/file_h22.txt
+     * 1c8e3e2f45da4c54c2470032fc7dbf53 ./tree2/h/h1/file_h12.txt
+     * 1c8e3e2f45da4c54c2470032fc7dbf53 ./tree2/h/h1/file_h13.txt
+     * e15fb61422728fd33dbe611c729e83db ./tree2/h/h2/file_h21.txt
+     * e15fb61422728fd33dbe611c729e83db ./tree2/h/h2/file_h22.txt
      * 8f39359c631f7a3946544949284c8cbe ./tree2/h/h3/file_h33.txt
      * 724b0d02b6eac3be283f4623acc4907e ./tree2/h/h4/file_h41.txt
      * 3269ba275283a90f251cfe14a1c2d379 ./tree2/h/h5/file_h51.txt
      * 3269ba275283a90f251cfe14a1c2d379 ./tree2/h/h5/file_h53.txt
      * 3269ba275283a90f251cfe14a1c2d379 ./tree2/h/h5/file_h54.txt
+     * 3269ba275283a90f251cfe14a1c2d379 ./tree2/h/h5/file_h55.txt
      * 58d2799e33112b64683354f986ac287b ./tree2/h/h6/file_h61.txt
      * 58d2799e33112b64683354f986ac287b ./tree2/h/h6/file_h65.txt
      * 58d2799e33112b64683354f986ac287b ./tree2/h/h6/file_h66.txt
@@ -248,44 +249,43 @@ public enum FileTestData {
 
     // EXTENDED FILE RELATIONS
 
-    // one file in our tree shares the hash with two files in their tree.
-    // the paths are not corresponding.
+    // 1 file in our tree shares the hash with 2 files in their tree.
+    // The paths are not corresponding.
     FILE_TR1_H1_F1(
             "tree1/h/h1/file_h11.txt",
-            "content of the file file_h11.txt",
-            "47910b93c6da4e985ff5822087eed430"),
+            "content of the file file_h1.txt",
+            "1c8e3e2f45da4c54c2470032fc7dbf53"),
 
     FILE_TR2_H1_F1(
             "tree2/h/h1/file_h12.txt",
-            "content of the file file_h11.txt",
-            "47910b93c6da4e985ff5822087eed430"),
+            "content of the file file_h1.txt",
+            "1c8e3e2f45da4c54c2470032fc7dbf53"),
 
     FILE_TR2_H1_F2(
             "tree2/h/h1/file_h13.txt",
-            "content of the file file_h11.txt",
-            "47910b93c6da4e985ff5822087eed430"),
+            "content of the file file_h1.txt",
+            "1c8e3e2f45da4c54c2470032fc7dbf53"),
 
-    // one file in our tree shares the hash with two files in their tree. the
+    // 1 file in our tree shares the hash with 2 files in their tree. The
     // path of the file in our tree corresponds with one of the file's hashes in
-    // their
-    // tree.
+    // their tree.
     FILE_TR1_H2_F1(
             "tree1/h/h2/file_h21.txt",
-            "content of the file file_h21.txt",
-            "162656b5b1217bdea3658d132879e30a"),
+            "content of the file file_h2.txt",
+            "e15fb61422728fd33dbe611c729e83db"),
 
     FILE_TR2_H2_F1(
             "tree2/h/h2/file_h21.txt",
-            "content of the file file_h21.txt",
-            "162656b5b1217bdea3658d132879e30a"),
+            "content of the file file_h2.txt",
+            "e15fb61422728fd33dbe611c729e83db"),
 
     FILE_TR2_H2_F2(
             "tree2/h/h2/file_h22.txt",
-            "content of the file file_h21.txt",
-            "162656b5b1217bdea3658d132879e30a"),
+            "content of the file file_h2.txt",
+            "e15fb61422728fd33dbe611c729e83db"),
 
-    // two files in our tree share the hash with one files in our tree.
-    // the paths are not corresponding.
+    // 2 files in our tree share the hash with 1 file in our tree.
+    // The paths are not corresponding.
     FILE_TR1_H3_F1(
             "tree1/h/h3/file_h31.txt",
             "content of the file file_h3.txt",
@@ -301,8 +301,8 @@ public enum FileTestData {
             "content of the file file_h3.txt",
             "8f39359c631f7a3946544949284c8cbe"),
 
-    // two files in our tree share the hash with one file in their tree. the
-    // path of the file in their tree corresponds with one of the file's hashes
+    // 2 files in our tree share the hash with 1 file in their tree. The
+    // path of the file in their tree corresponds with one of the file's paths
     // in our tree.
     FILE_TR1_H4_F1(
             "tree1/h/h4/file_h41.txt",
@@ -319,8 +319,8 @@ public enum FileTestData {
             "content of the file file_h4.txt",
             "724b0d02b6eac3be283f4623acc4907e"),
 
-    // two files in our tree share the hash with four files in their tree.
-    // one file in our tree also shares the path with one file in their tree
+    // 2 files in our tree share the hash with 4 files in their tree.
+    // One file in our tree also shares the path with one file in their tree
     // (correspondence), however, the others do not.
     FILE_TR1_H5_F1(
             "tree1/h/h5/file_h51.txt",
@@ -348,7 +348,7 @@ public enum FileTestData {
             "3269ba275283a90f251cfe14a1c2d379"),
 
     FILE_TR2_H5_F4(
-            "tree2/h/h5/file_h54.txt",
+            "tree2/h/h5/file_h55.txt",
             "content of the file file_h5.txt",
             "3269ba275283a90f251cfe14a1c2d379"),
 

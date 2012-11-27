@@ -97,10 +97,10 @@ public final class MirrorizeMain {
 
         DirDiffAnalyzer<String> dirDiffAnalyzer = new DirDiffAnalyzer<String>(
                 hashesTree1, hashesTree2);
-        // log.info("Files with hashes that only appear in our tree: \n" + new
-        // DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfHashes()));
-        // log.info("Files with paths that only appear in our tree: \n" + new
-        // DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfPaths()));
+        log.info("Files with hashes that only appear in our tree: \n"
+                + new DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfHashes()));
+        log.info("Files with paths that only appear in our tree: \n"
+                + new DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfPaths()));
         log.info("New files: \n"
                 + new DirDiffSet<String>(dirDiffAnalyzer.getNewFiles()));
         log.info("Modified files: \n"
