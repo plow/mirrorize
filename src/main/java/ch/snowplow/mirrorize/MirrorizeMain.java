@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.log4j.Logger;
 
 import ch.snowplow.mirrorize.analysis.DirDiffAnalyzer;
+import ch.snowplow.mirrorize.analysis.DirDiffAnalyzer.SetType;
 import ch.snowplow.mirrorize.analysis.DirDiffSet;
 import ch.snowplow.mirrorize.common.DirHashMap;
 import ch.snowplow.mirrorize.gathering.FileSysTreeCrawler;
@@ -91,24 +92,31 @@ public final class MirrorizeMain {
         log.trace(hashesTree2.toString());
         log.info(dashes);
 
-        // DirDiffAnalyzer2<String> dirDiffAnalyzer = new DirDiffAnalyzer2<>(
-        // hashesTree1, hashesTree2);
-        // dirDiffAnalyzer.analyze();
-
         DirDiffAnalyzer<String> dirDiffAnalyzer = new DirDiffAnalyzer<String>(
                 hashesTree1, hashesTree2);
+        dirDiffAnalyzer.analyze();
+        log.info("Corresponding files: \n"
+                + new DirDiffSet<String>(dirDiffAnalyzer.getCorrespFilesC()));
+        log.info("Files with hashes that appear in both trees: \n"
+                + new DirDiffSet<String>(dirDiffAnalyzer
+                        .getSetOfHashesC(SetType.CORRESP)));
+        log.info("Files with paths that appear in both trees: \n"
+                + new DirDiffSet<String>(dirDiffAnalyzer
+                        .getSetOfPathsC(SetType.CORRESP)));
         log.info("Files with hashes that only appear in our tree: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfHashes()));
+                + new DirDiffSet<String>(dirDiffAnalyzer
+                        .getSetOfHashesC(SetType.DIFF)));
         log.info("Files with paths that only appear in our tree: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getDiffsOfPaths()));
+                + new DirDiffSet<String>(dirDiffAnalyzer
+                        .getSetOfPathsC(SetType.DIFF)));
         log.info("New files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getNewFiles()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getNewFilesC()));
         log.info("Modified files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getModifiedFiles()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getModifiedFilesC()));
         log.info("Deleted files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getDeletedFiles()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getDeletedFilesC()));
         log.info("Moved files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getMovedFiles())); //
+                + new DirDiffSet<String>(dirDiffAnalyzer.getMovedFilesC())); //
         // log.info("      All files: \n" // + new
         // DirDiffSet(dirDiffAnalyzer.getAllFiles()));
 
