@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.log4j.Logger;
 
 import ch.snowplow.mirrorize.common.DirHashMap;
-import ch.snowplow.mirrorize.common.FileHash;
+import ch.snowplow.mirrorize.common.HashedFile;
 import ch.snowplow.mirrorize.common.Path;
 import ch.snowplow.mirrorize.common.Tools;
 
@@ -239,7 +239,7 @@ public class FileSysTreeCrawler {
      *            files/directories under the root element.
      * @return Directory hash of the current directory.
      */
-    private FileHash<String> dirTraverse(File folder, int depth,
+    private HashedFile<String> dirTraverse(File folder, int depth,
             DirHashMap<String> hashStore) {
 
         File[] listOfFiles = folder.listFiles();
@@ -286,7 +286,7 @@ public class FileSysTreeCrawler {
         String folderHash = (new StringMD5Hasher(
                 dirHashesCurrDepth.getSerializedHashes())).getHash();
 
-        FileHash<String> folderFileHash = new FileHash<String>(
+        HashedFile<String> folderFileHash = new HashedFile<String>(
                 new Path(depth == 0 ? "" : folder.getPath().substring(
                         treeRootPrefixLen)), folderHash);
         dirHashes.add(folderFileHash);

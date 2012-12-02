@@ -3,18 +3,18 @@ package ch.snowplow.mirrorize.analysis;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import ch.snowplow.mirrorize.common.FileHash;
-import ch.snowplow.mirrorize.common.FileHashCorresp;
-import ch.snowplow.mirrorize.common.FileHashSet;
+import ch.snowplow.mirrorize.common.HashedFile;
+import ch.snowplow.mirrorize.common.HashedFileRelat;
+import ch.snowplow.mirrorize.common.HashedFileSet;
 
-public class DirDiffSet<T extends Comparable<T>> extends TreeSet<FileHash<T>> {
+public class DirDiffSet<T extends Comparable<T>> extends TreeSet<HashedFile<T>> {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public DirDiffSet(FileHashSet<T> set) {
+    public DirDiffSet(HashedFileSet<T> set) {
         // TODO maybe its possible to provide a SortedSet here for performance
         // reasons
         super(set);
@@ -23,16 +23,16 @@ public class DirDiffSet<T extends Comparable<T>> extends TreeSet<FileHash<T>> {
     @Override
     public String toString() {
         StringBuffer strBuf = new StringBuffer();
-        Iterator<FileHash<T>> it = iterator();
+        Iterator<HashedFile<T>> it = iterator();
         while (it.hasNext()) {
-            FileHash<T> fileHash = it.next();
+            HashedFile<T> fileHash = it.next();
             // strBuf.append(Tools.getSpaces(fileHash.getPath().getDepth() * 2))
             // .append(fileHash.getPath().getName()).append("\n");
 
             strBuf.append(fileHash.getPath().getPath());
-            if (fileHash instanceof FileHashCorresp) {
+            if (fileHash instanceof HashedFileRelat) {
                 strBuf.append(" -> ").append(
-                        ((FileHashCorresp<T>) fileHash).getCorrespPath());
+                        ((HashedFileRelat<T>) fileHash).getRelatedPaths());
             }
             strBuf.append("\n");
         }

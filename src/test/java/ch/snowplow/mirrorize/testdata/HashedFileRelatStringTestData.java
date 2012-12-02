@@ -1,13 +1,19 @@
 package ch.snowplow.mirrorize.testdata;
 
-import ch.snowplow.mirrorize.common.HashedFileCorresp;
+import java.util.Arrays;
+import java.util.Collection;
+
+import ch.snowplow.mirrorize.common.HashedFileRelat;
 import ch.snowplow.mirrorize.common.Path;
-import ch.snowplow.mirrorize.testdata.builders.HashedFileCorrespBuilder;
+import ch.snowplow.mirrorize.testdata.builders.HashedFileRelatBuilder;
 import ch.snowplow.mirrorize.testdata.builders.PathBuilder;
 
-public enum HashedFileCorrespStringTestData {
+public enum HashedFileRelatStringTestData {
 
     FILEHASH_REF("this/is/a/pat.h", "this/is/b/pat.h", "abcdef"),
+    // TODO do tests with FileHashRelat objects with multiple related paths
+    FILEHASH_REF_R("this/is/a/pat.h", new String[] { "this/is/c/pat.h",
+            "this/is/b/pat.h" }, "abcdef"),
 
     // hash code / equals
     FILEHASH_SAME_HASH(
@@ -29,27 +35,33 @@ public enum HashedFileCorrespStringTestData {
     FILEHASH_MORE1("this/is/a/pat.j", "aaaaaaaaaaa", "aaaaaaa"),
     FILEHASH_MORE2("this/is/a/pat.k", "this/is/b/pat.h", "abcdef");
 
-    private String path1;
-    private String path2;
+    private String path;
+    private String[] relatPaths;
     private String hash;
 
-    HashedFileCorrespStringTestData(String path1, String path2, String hash) {
-        this.path1 = path1;
-        this.path2 = path2;
+    HashedFileRelatStringTestData(String path, String relatPath, String hash) {
+        this.path = path;
+        this.relatPaths = new String[] { relatPath };
         this.hash = hash;
     }
 
-    public HashedFileCorresp<String> getFileHash() {
-        return new HashedFileCorrespBuilder<String>("").withPath1(path1)
-                .withPath2(path2).withHash(hash).build();
+    HashedFileRelatStringTestData(String path, String[] relatPaths, String hash) {
+        this.path = path;
+        this.relatPaths = relatPaths;
+        this.hash = hash;
     }
 
-    public Path getPath1() {
-        return new PathBuilder().withPath(path1).build();
+    public HashedFileRelat<String> getHashedFileRelat() {
+        return new HashedFileRelatBuilder<String>("").withPath(path)
+                .withRelatedPaths(relatPaths).withHash(hash).build();
     }
 
-    public Path getPath2() {
-        return new PathBuilder().withPath(path2).build();
+    public Path getPath() {
+        return new PathBuilder().withPath(path).build();
+    }
+
+    public Collection<String> getRelatPaths() {
+        return Arrays.asList(relatPaths);
     }
 
     public String getHash() {

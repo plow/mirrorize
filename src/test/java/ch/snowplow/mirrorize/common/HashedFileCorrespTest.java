@@ -5,26 +5,29 @@ import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
-import ch.snowplow.mirrorize.testdata.HashedFileCorrespStringTestData;
+import ch.snowplow.mirrorize.testdata.HashedFileRelatStringTestData;
 import ch.snowplow.mirrorize.testdata.HashedFileStringTestData;
 import ch.snowplow.mirrorize.testdata.builders.HashedFileBuilder;
-import ch.snowplow.mirrorize.testdata.builders.HashedFileCorrespBuilder;
+import ch.snowplow.mirrorize.testdata.builders.HashedFileRelatBuilder;
+import ch.snowplow.mirrorize.testdata.builders.PathSetBuilder;
 
 public class HashedFileCorrespTest extends TestCase {
 
     public void testGetPath() {
-        for (HashedFileCorrespStringTestData fileHashStrTD : HashedFileCorrespStringTestData
+        for (HashedFileRelatStringTestData fileHashStrTD : HashedFileRelatStringTestData
                 .values()) {
-            assertEquals(fileHashStrTD.getPath1(), fileHashStrTD.getFileHash()
-                    .getPath());
+            assertEquals(fileHashStrTD.getPath(), fileHashStrTD
+                    .getHashedFileRelat().getPath());
         }
     }
 
     public void testGetPathCorresp() {
-        for (HashedFileCorrespStringTestData fileHashStrTD : HashedFileCorrespStringTestData
+        for (HashedFileRelatStringTestData fileHashStrTD : HashedFileRelatStringTestData
                 .values()) {
-            assertEquals(fileHashStrTD.getPath2(), fileHashStrTD.getFileHash()
-                    .getCorrespPath());
+            assertEquals(
+                    new PathSetBuilder()
+                            .addPaths(fileHashStrTD.getRelatPaths()).build(),
+                    fileHashStrTD.getHashedFileRelat().getRelatedPaths());
         }
     }
 
@@ -37,16 +40,22 @@ public class HashedFileCorrespTest extends TestCase {
     }
 
     public void testCompareTo() {
-        List<HashedFileCorresp<String>> fileHashes = Arrays.asList(
-                HashedFileCorrespStringTestData.FILEHASH_LESS1.getFileHash(),
-                HashedFileCorrespStringTestData.FILEHASH_LESS0.getFileHash(),
-                HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash(),
-                HashedFileCorrespStringTestData.FILEHASH_MORE0.getFileHash(),
-                HashedFileCorrespStringTestData.FILEHASH_MORE1.getFileHash(),
-                HashedFileCorrespStringTestData.FILEHASH_MORE2.getFileHash());
-        Iterator<HashedFileCorresp<String>> it = fileHashes.iterator();
-        HashedFileCorresp<String> smaller = it.next();
-        HashedFileCorresp<String> larger = it.next();
+        List<HashedFileRelat<String>> fileHashes = Arrays
+                .asList(HashedFileRelatStringTestData.FILEHASH_LESS1
+                        .getHashedFileRelat(),
+                        HashedFileRelatStringTestData.FILEHASH_LESS0
+                                .getHashedFileRelat(),
+                        HashedFileRelatStringTestData.FILEHASH_REF
+                                .getHashedFileRelat(),
+                        HashedFileRelatStringTestData.FILEHASH_MORE0
+                                .getHashedFileRelat(),
+                        HashedFileRelatStringTestData.FILEHASH_MORE1
+                                .getHashedFileRelat(),
+                        HashedFileRelatStringTestData.FILEHASH_MORE2
+                                .getHashedFileRelat());
+        Iterator<HashedFileRelat<String>> it = fileHashes.iterator();
+        HashedFileRelat<String> smaller = it.next();
+        HashedFileRelat<String> larger = it.next();
         while (it.hasNext()) {
             smaller = larger;
             larger = it.next();
@@ -56,90 +65,100 @@ public class HashedFileCorrespTest extends TestCase {
     }
 
     public void testHashCode() {
-        assertEquals(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .hashCode(), HashedFileCorrespStringTestData.FILEHASH_REF
-                .getFileHash().hashCode());
-        assertEquals(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .hashCode(),
-                HashedFileCorrespStringTestData.FILEHASH_SAME_PATH1_HASH
-                        .getFileHash().hashCode());
+        assertEquals(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().hashCode(),
+                HashedFileRelatStringTestData.FILEHASH_REF.getHashedFileRelat()
+                        .hashCode());
+        assertEquals(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().hashCode(),
+                HashedFileRelatStringTestData.FILEHASH_SAME_PATH1_HASH
+                        .getHashedFileRelat().hashCode());
 
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .hashCode() == HashedFileCorrespStringTestData.FILEHASH_SAME_HASH
-                .getFileHash().hashCode());
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .hashCode() == HashedFileCorrespStringTestData.FILEHASH_SAME_PATH1
-                .getFileHash().hashCode());
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .hashCode() == HashedFileCorrespStringTestData.FILEHASH_SAME_PATH2
-                .getFileHash().hashCode());
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .hashCode() == HashedFileCorrespStringTestData.FILEHASH_SAME_PATH1_PATH2
-                .getFileHash().hashCode());
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .hashCode() == HashedFileCorrespStringTestData.FILEHASH_DIFFERENT
-                .getFileHash().hashCode());
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().hashCode() == HashedFileRelatStringTestData.FILEHASH_SAME_HASH
+                .getHashedFileRelat().hashCode());
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().hashCode() == HashedFileRelatStringTestData.FILEHASH_SAME_PATH1
+                .getHashedFileRelat().hashCode());
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().hashCode() == HashedFileRelatStringTestData.FILEHASH_SAME_PATH2
+                .getHashedFileRelat().hashCode());
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().hashCode() == HashedFileRelatStringTestData.FILEHASH_SAME_PATH1_PATH2
+                .getHashedFileRelat().hashCode());
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().hashCode() == HashedFileRelatStringTestData.FILEHASH_DIFFERENT
+                .getHashedFileRelat().hashCode());
 
         assertEquals(
                 new HashedFileBuilder<String>("").withPath("this/is/a/pat.h")
                         .withHash("abcdef").build().hashCode(),
-                new HashedFileCorrespBuilder<String>("")
-                        .withPath1("this/is/a/pat.h").withHash("abcdef")
-                        .withPath2("test/path").build().hashCode());
-        assertFalse(new HashedFileBuilder<String>("").withPath("this/is/a/pat.h")
-                .withHash("abcdef").build().hashCode() == new HashedFileCorrespBuilder<String>(
-                "").withPath1("this/is/a/pat.hh").withHash("abcdef")
-                .withPath2("test/path").build().hashCode());
-        assertFalse(new HashedFileBuilder<String>("").withPath("this/is/a/pat.h")
-                .withHash("abcdef").build().hashCode() == new HashedFileCorrespBuilder<String>(
-                "").withPath1("this/is/a/pat.h").withHash("abcdeff")
-                .withPath2("test/path").build().hashCode());
+                new HashedFileRelatBuilder<String>("")
+                        .withPath("this/is/a/pat.h").withHash("abcdef")
+                        .withRelatedPath("test/path").build().hashCode());
+        assertFalse(new HashedFileBuilder<String>("")
+                .withPath("this/is/a/pat.h").withHash("abcdef").build()
+                .hashCode() == new HashedFileRelatBuilder<String>("")
+                .withPath("this/is/a/pat.hh").withHash("abcdef")
+                .withRelatedPath("test/path").build().hashCode());
+        assertFalse(new HashedFileBuilder<String>("")
+                .withPath("this/is/a/pat.h").withHash("abcdef").build()
+                .hashCode() == new HashedFileRelatBuilder<String>("")
+                .withPath("this/is/a/pat.h").withHash("abcdeff")
+                .withRelatedPath("test/path").build().hashCode());
 
     }
 
     public void testEquals() {
-        assertEquals(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash(),
-                HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash());
-        assertEquals(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash(),
-                HashedFileCorrespStringTestData.FILEHASH_SAME_PATH1_HASH
-                        .getFileHash());
+        assertEquals(
+                HashedFileRelatStringTestData.FILEHASH_REF.getHashedFileRelat(),
+                HashedFileRelatStringTestData.FILEHASH_REF.getHashedFileRelat());
+        assertEquals(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat(),
+                HashedFileRelatStringTestData.FILEHASH_SAME_PATH1_HASH
+                        .getHashedFileRelat());
 
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .equals(HashedFileCorrespStringTestData.FILEHASH_SAME_HASH
-                        .getFileHash()));
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .equals(HashedFileCorrespStringTestData.FILEHASH_SAME_PATH1
-                        .getFileHash()));
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .equals(HashedFileCorrespStringTestData.FILEHASH_SAME_PATH2
-                        .getFileHash()));
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .equals(HashedFileCorrespStringTestData.FILEHASH_SAME_PATH1_PATH2
-                        .getFileHash()));
-        assertFalse(HashedFileCorrespStringTestData.FILEHASH_REF.getFileHash()
-                .equals(HashedFileCorrespStringTestData.FILEHASH_DIFFERENT
-                        .getFileHash()));
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().equals(
+                        HashedFileRelatStringTestData.FILEHASH_SAME_HASH
+                                .getHashedFileRelat()));
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().equals(
+                        HashedFileRelatStringTestData.FILEHASH_SAME_PATH1
+                                .getHashedFileRelat()));
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().equals(
+                        HashedFileRelatStringTestData.FILEHASH_SAME_PATH2
+                                .getHashedFileRelat()));
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().equals(
+                        HashedFileRelatStringTestData.FILEHASH_SAME_PATH1_PATH2
+                                .getHashedFileRelat()));
+        assertFalse(HashedFileRelatStringTestData.FILEHASH_REF
+                .getHashedFileRelat().equals(
+                        HashedFileRelatStringTestData.FILEHASH_DIFFERENT
+                                .getHashedFileRelat()));
 
         assertEquals(
                 new HashedFileBuilder<String>("").withPath("this/is/a/pat.h")
                         .withHash("abcdef").build(),
-                new HashedFileCorrespBuilder<String>("")
-                        .withPath1("this/is/a/pat.h").withHash("abcdef")
-                        .withPath2("test/path").build());
+                new HashedFileRelatBuilder<String>("")
+                        .withPath("this/is/a/pat.h").withHash("abcdef")
+                        .withRelatedPath("test/path").build());
         assertFalse(new HashedFileBuilder<String>("")
                 .withPath("this/is/a/pat.h")
                 .withHash("abcdef")
                 .build()
-                .equals(new HashedFileCorrespBuilder<String>("")
-                        .withPath1("this/is/a/pat.hh").withHash("abcdef")
-                        .withPath2("test/path").build()));
+                .equals(new HashedFileRelatBuilder<String>("")
+                        .withPath("this/is/a/pat.hh").withHash("abcdef")
+                        .withRelatedPath("test/path").build()));
         assertFalse(new HashedFileBuilder<String>("")
                 .withPath("this/is/a/pat.h")
                 .withHash("abcdef")
                 .build()
-                .equals(new HashedFileCorrespBuilder<String>("")
-                        .withPath1("this/is/a/pat.h").withHash("abcdeff")
-                        .withPath2("test/path").build()));
+                .equals(new HashedFileRelatBuilder<String>("")
+                        .withPath("this/is/a/pat.h").withHash("abcdeff")
+                        .withRelatedPath("test/path").build()));
     }
 
 }

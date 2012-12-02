@@ -1,6 +1,7 @@
 package ch.snowplow.mirrorize.testdata.builders;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import ch.snowplow.mirrorize.common.PathSet;
 
@@ -10,6 +11,11 @@ public class PathSetBuilder implements Buildable<PathSet> {
 
     public PathSetBuilder addPath(String path) {
         this.paths.add(path);
+        return this;
+    }
+
+    public PathSetBuilder addPaths(Collection<String> relatPaths) {
+        this.paths.addAll(relatPaths);
         return this;
     }
 

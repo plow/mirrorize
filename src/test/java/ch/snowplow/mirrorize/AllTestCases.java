@@ -4,9 +4,9 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import ch.snowplow.mirrorize.analysis.DirDiffAnalyzerTest;
 import ch.snowplow.mirrorize.common.DirHashMapTest;
-import ch.snowplow.mirrorize.common.FileHashCorrespTest;
-import ch.snowplow.mirrorize.common.FileHashSetTest;
-import ch.snowplow.mirrorize.common.FileHashTest;
+import ch.snowplow.mirrorize.common.HashedFileCorrespTest;
+import ch.snowplow.mirrorize.common.HashedFileSetTest;
+import ch.snowplow.mirrorize.common.HashedFileTest;
 import ch.snowplow.mirrorize.common.PathSetTest;
 import ch.snowplow.mirrorize.common.PathTest;
 import ch.snowplow.mirrorize.common.TestDirHashMap;
@@ -30,9 +30,9 @@ public final class AllTestCases extends TestCase {
 
         // ch.snowplow.mirrorize.common
         suite.addTestSuite(DirHashMapTest.class);
-        suite.addTestSuite(FileHashCorrespTest.class);
-        suite.addTestSuite(FileHashSetTest.class);
-        suite.addTestSuite(FileHashTest.class);
+        suite.addTestSuite(HashedFileCorrespTest.class);
+        suite.addTestSuite(HashedFileSetTest.class);
+        suite.addTestSuite(HashedFileTest.class);
         suite.addTestSuite(PathSetTest.class);
         suite.addTestSuite(PathTest.class);
         suite.addTestSuite(TestDirHashMap.class);
