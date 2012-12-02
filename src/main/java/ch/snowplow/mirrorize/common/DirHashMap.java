@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class DirHashMap<T extends Comparable<T>> {
 
-    private FileHashSet<T> fileHashes;
+    private HashedFileSet<T> fileHashes;
     private Map<T, PathSet> fileByHash;
     private Map<Path, T> fileByPath;
 
@@ -28,7 +28,7 @@ public class DirHashMap<T extends Comparable<T>> {
      * collections.
      */
     public DirHashMap() {
-        fileHashes = new FileHashSet<T>();
+        fileHashes = new HashedFileSet<T>();
         fileByHash = new HashMap<T, PathSet>();
         fileByPath = new HashMap<Path, T>();
     }
@@ -45,7 +45,7 @@ public class DirHashMap<T extends Comparable<T>> {
         // TODO initial size is problematic because the file hashes set doesn't
         // contain the same number of element as the hash maps in case there are
         // several files with the same content, i.e., with the same hash.
-        fileHashes = new FileHashSet<T>(initialSize);
+        fileHashes = new HashedFileSet<T>(initialSize);
         fileByHash = new HashMap<T, PathSet>(initialSize);
         fileByPath = new HashMap<Path, T>(initialSize);
     }
@@ -59,7 +59,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            Path of the file
      */
     public void add(T fileHash, Path filePath) {
-        fileHashes.add(new FileHash<T>(filePath, fileHash));
+        fileHashes.add(new HashedFile<T>(filePath, fileHash));
         PathSet ps = fileByHash.get(fileHash);
         if (ps == null) {
             fileByHash.put(fileHash, new PathSet(filePath));
@@ -75,7 +75,7 @@ public class DirHashMap<T extends Comparable<T>> {
      * @param fileHash
      *            FileHash to be added
      */
-    public void add(FileHash<T> fileHash) {
+    public void add(HashedFile<T> fileHash) {
         fileHashes.add(fileHash);
         PathSet ps = fileByHash.get(fileHash.getHash());
         if (ps == null) {
@@ -97,7 +97,7 @@ public class DirHashMap<T extends Comparable<T>> {
     public void addAll(DirHashMap<T> hashes) {
         // Cannot just employ addAll of backing HashMaps because of identical
         // files with different pahts.
-        for (FileHash<T> fileHash : hashes.getFileHashSet()) {
+        for (HashedFile<T> fileHash : hashes.getFileHashSet()) {
             add(fileHash);
         }
     }
@@ -163,16 +163,16 @@ public class DirHashMap<T extends Comparable<T>> {
         return strBuf.toString();
     }
 
-    public FileHashSet<T> getFileHashSet() {
+    public HashedFileSet<T> getFileHashSet() {
         return fileHashes;
     }
 
-    public FileHashSet<T> getFileHashes(Collection<Path> paths) {
-        FileHashSet<T> fhs = new FileHashSet<T>();
+    public HashedFileSet<T> getFileHashes(Collection<Path> paths) {
+        HashedFileSet<T> fhs = new HashedFileSet<T>();
         for (Path p : paths) {
             T h = fileByPath.get(p);
             if (h != null) {
-                fhs.add(new FileHash<T>(p, h));
+                fhs.add(new HashedFile<T>(p, h));
             }
         }
         return fhs;
@@ -186,13 +186,13 @@ public class DirHashMap<T extends Comparable<T>> {
         return fileByPath.keySet();
     }
 
-    public FileHash<T> getRoot() {
+    public HashedFile<T> getRoot() {
         Path root = new Path("");
         T hash = fileByPath.get(root);
         if (hash == null) {
             return null;
         }
-        return new FileHash<T>(root, hash);
+        return new HashedFile<T>(root, hash);
     }
 
 }
