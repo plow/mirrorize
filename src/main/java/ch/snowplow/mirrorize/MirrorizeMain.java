@@ -94,29 +94,28 @@ public final class MirrorizeMain {
 
         DirDiffAnalyzer<String> dirDiffAnalyzer = new DirDiffAnalyzer<String>(
                 hashesTree1, hashesTree2);
-        dirDiffAnalyzer.analyze();
         log.info("Corresponding files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getCorrespFilesC()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getCorrespFiles()));
         log.info("Files with hashes that appear in both trees: \n"
                 + new DirDiffSet<String>(dirDiffAnalyzer
-                        .getSetOfHashesC(SetType.CORRESP)));
+                        .getSetOfHashes(SetType.CORRESP)));
         log.info("Files with paths that appear in both trees: \n"
                 + new DirDiffSet<String>(dirDiffAnalyzer
-                        .getSetOfPathsC(SetType.CORRESP)));
+                        .getSetOfPaths(SetType.CORRESP)));
         log.info("Files with hashes that only appear in our tree: \n"
                 + new DirDiffSet<String>(dirDiffAnalyzer
-                        .getSetOfHashesC(SetType.DIFF)));
+                        .getSetOfHashes(SetType.DIFF)));
         log.info("Files with paths that only appear in our tree: \n"
                 + new DirDiffSet<String>(dirDiffAnalyzer
-                        .getSetOfPathsC(SetType.DIFF)));
+                        .getSetOfPaths(SetType.DIFF)));
         log.info("New files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getNewFilesC()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getNewFiles()));
         log.info("Modified files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getModifiedFilesC()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getModifiedFiles()));
         log.info("Deleted files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getDeletedFilesC()));
+                + new DirDiffSet<String>(dirDiffAnalyzer.getDeletedFiles()));
         log.info("Moved files: \n"
-                + new DirDiffSet<String>(dirDiffAnalyzer.getMovedFilesC())); //
+                + new DirDiffSet<String>(dirDiffAnalyzer.getMovedFiles())); //
         // log.info("      All files: \n" // + new
         // DirDiffSet(dirDiffAnalyzer.getAllFiles()));
 

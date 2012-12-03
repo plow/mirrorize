@@ -20,6 +20,10 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
     private DirHashMap<T> theirMap;
 
     private HashedFileSet<T> correspFiles = null;
+    private HashedFileSet<T> newFiles = null;
+    private HashedFileSet<T> deletedFiles = null;
+    private HashedFileSet<T> modifiedFiles = null;
+    private HashedFileSet<T> movedFiles = null;
 
     public enum SetType {
         DIFF,
@@ -31,13 +35,12 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         this.theirMap = theirMap;
     }
 
-    public void analyze() {
-        correspFiles = getCorrespFilesC();
-    }
-
-    public HashedFileSet<T> getCorrespFilesC() {
-        HashedFileSet<T> correspFiles = new HashedFileSet<T>(getSetOfPaths(
-                ourMap, theirMap, SetType.CORRESP));
+    public HashedFileSet<T> getCorrespFiles() {
+        if (correspFiles != null) {
+            return correspFiles;
+        }
+        correspFiles = new HashedFileSet<T>(getSetOfPth(ourMap, theirMap,
+                SetType.CORRESP));
         Collection<Path> toRemove = new ArrayList<Path>();
         for (HashedFile<T> fh : correspFiles) {
             Path p = fh.getPath();
@@ -50,66 +53,81 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         return correspFiles;
     }
 
-    public HashedFileSet<T> getNewFilesC() {
+    public HashedFileSet<T> getNewFiles() {
+        if (newFiles != null) {
+            return newFiles;
+        }
         // TODO: maybe it's more efficient to first removeall by path
         // get all files without a corresponding file in their map (by hash)
-        HashedFileSet<T> newFiles = getSetOfHashes(ourMap, theirMap,
-                SetType.DIFF, false);
+        newFiles = getSetOfHsh(ourMap, theirMap, SetType.DIFF, false);
         // subtract files without corresponding file in their map (by path)
         newFiles.removeAllByPath(theirMap.getPaths());
         return newFiles;
     }
 
-    public HashedFileSet<T> getDeletedFilesC() {
+    public HashedFileSet<T> getDeletedFiles() {
+        if (deletedFiles != null) {
+            return deletedFiles;
+        }
         // get all files in their map without corresponding path in our map (by
         // path)
-        HashedFileSet<T> nonCorrespFilesByPath = getSetOfPaths(theirMap,
+        HashedFileSet<T> nonCorrespFilesByPath = getSetOfPth(theirMap,
                 ourMap, SetType.DIFF);
 
         // get all files in their map without corresponding hash in our map
-        HashedFileSet<T> nonCorrespFilesByHash = getSetOfHashes(theirMap,
+        HashedFileSet<T> nonCorrespFilesByHash = getSetOfHsh(theirMap,
                 ourMap, SetType.DIFF, false);
 
         // return set with those files having neither a corresponding path nor a
         // corresponding hash in our map
         nonCorrespFilesByHash.retainAll(nonCorrespFilesByPath);
-        return nonCorrespFilesByHash;
+        deletedFiles = nonCorrespFilesByHash;
+        return deletedFiles;
     }
 
-    public HashedFileSet<T> getModifiedFilesC() {
+    public HashedFileSet<T> getModifiedFiles() {
+        if (modifiedFiles != null) {
+            return modifiedFiles;
+        }
         // get all files in our map with corresponding path in their map
-        HashedFileSet<T> correspFilesByPath = getSetOfPaths(ourMap, theirMap,
+        HashedFileSet<T> correspFilesByPath = getSetOfPth(ourMap, theirMap,
                 SetType.CORRESP);
 
         // files are only modified if they are not identical
-        correspFilesByPath.removeAll(getCorrespFilesC());
+        correspFilesByPath.removeAll(getCorrespFiles());
 
         // subtract root element which can't be modified
         correspFilesByPath.removeAllByPath(Arrays.asList(new Path("")));
-        return correspFilesByPath;
+        modifiedFiles = correspFilesByPath;
+        return modifiedFiles;
     }
 
-    public HashedFileSet<T> getMovedFilesC() {
+    public HashedFileSet<T> getMovedFiles() {
+        if (movedFiles != null) {
+            return movedFiles;
+        }
         // get all files in our map with corresponding hash in their map
-        HashedFileSet<T> correspFilesByHash = getSetOfHashes(ourMap, theirMap,
+        HashedFileSet<T> correspFilesByHash = getSetOfHsh(ourMap, theirMap,
                 SetType.CORRESP, true);
 
         // files are only moved if they're paths are not identical
         // correspFilesByHash.removeAll(getCorrespFilesC());
-        correspFilesByHash.removeAllByHash(getCorrespFilesC().getHashes());
-        return correspFilesByHash;
+        correspFilesByHash.removeAllByHash(getCorrespFiles().getHashes());
+        movedFiles = correspFilesByHash;
+        return movedFiles;
     }
 
-    public HashedFileSet<T> getAllFilesC() {
+    public HashedFileSet<T> getAllFiles() {
+        // TODO returns reference to set in our map (not a copy)
         return ourMap.getFileHashSet();
     }
 
-    public HashedFileSet<T> getSetOfHashesC(SetType type) {
-        return getSetOfHashes(ourMap, theirMap, type, false);
+    public HashedFileSet<T> getSetOfHashes(SetType type) {
+        return getSetOfHsh(ourMap, theirMap, type, false);
     }
 
-    public HashedFileSet<T> getSetOfPathsC(SetType type) {
-        return getSetOfPaths(ourMap, theirMap, type);
+    public HashedFileSet<T> getSetOfPaths(SetType type) {
+        return getSetOfPth(ourMap, theirMap, type);
     }
 
     /**
@@ -135,7 +153,7 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
      * @return The set of those files in our directory hash map that fulfill the
      *         requirements implied by the type argument.
      */
-    private HashedFileSet<T> getSetOfHashes(DirHashMap<T> ourMap,
+    private HashedFileSet<T> getSetOfHsh(DirHashMap<T> ourMap,
             DirHashMap<T> theirMap, SetType type, boolean returnRelations) {
         Set<T> hashes = new HashSet<T>(ourMap.getHashes());
         switch (type) {
@@ -183,7 +201,7 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
      * @return The set of those files in our directory hash map that fulfill the
      *         requirements implied by the type argument.
      */
-    private HashedFileSet<T> getSetOfPaths(DirHashMap<T> ourMap,
+    private HashedFileSet<T> getSetOfPth(DirHashMap<T> ourMap,
             DirHashMap<T> theirMap, SetType type) {
         Set<Path> paths = new HashSet<Path>(ourMap.getPaths());
         switch (type) {
