@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class DirHashMap<T extends Comparable<T>> {
 
-    private HashedFileSet<T> fileHashes;
+    private HashedFileSet<T> hashedFiles;
     private Map<T, PathSet> fileByHash;
     private Map<Path, T> fileByPath;
 
@@ -28,7 +28,7 @@ public class DirHashMap<T extends Comparable<T>> {
      * collections.
      */
     public DirHashMap() {
-        fileHashes = new HashedFileSet<T>();
+        hashedFiles = new HashedFileSet<T>();
         fileByHash = new HashMap<T, PathSet>();
         fileByPath = new HashMap<Path, T>();
     }
@@ -45,7 +45,7 @@ public class DirHashMap<T extends Comparable<T>> {
         // TODO initial size is problematic because the file hashes set doesn't
         // contain the same number of element as the hash maps in case there are
         // several files with the same content, i.e., with the same hash.
-        fileHashes = new HashedFileSet<T>(initialSize);
+        hashedFiles = new HashedFileSet<T>(initialSize);
         fileByHash = new HashMap<T, PathSet>(initialSize);
         fileByPath = new HashMap<Path, T>(initialSize);
     }
@@ -59,7 +59,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            Path of the file
      */
     public void add(T fileHash, Path filePath) {
-        fileHashes.add(new HashedFile<T>(filePath, fileHash));
+        hashedFiles.add(new HashedFile<T>(filePath, fileHash));
         PathSet ps = fileByHash.get(fileHash);
         if (ps == null) {
             fileByHash.put(fileHash, new PathSet(filePath));
@@ -76,7 +76,7 @@ public class DirHashMap<T extends Comparable<T>> {
      *            FileHash to be added
      */
     public void add(HashedFile<T> fileHash) {
-        fileHashes.add(fileHash);
+        hashedFiles.add(fileHash);
         PathSet ps = fileByHash.get(fileHash.getHash());
         if (ps == null) {
             fileByHash.put(fileHash.getHash(), new PathSet(fileHash.getPath()));
@@ -164,7 +164,7 @@ public class DirHashMap<T extends Comparable<T>> {
     }
 
     public HashedFileSet<T> getFileHashSet() {
-        return fileHashes;
+        return hashedFiles;
     }
 
     public HashedFileSet<T> getFileHashes(Collection<Path> paths) {

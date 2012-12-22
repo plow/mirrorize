@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import ch.snowplow.mirrorize.common.DirHashMap;
 import ch.snowplow.mirrorize.common.HashedFile;
 import ch.snowplow.mirrorize.common.Path;
-import ch.snowplow.mirrorize.common.Tools;
+import ch.snowplow.mirrorize.common.Utils;
 
 /**
  * A crawler which is able to recursively traverse a file system tree. When
@@ -254,7 +254,7 @@ public class FileSysTreeCrawler {
 
             if (file.isDirectory()) {
                 // file is a directory
-                log.info(Tools.getSpaces(depth * 2) + file.getName() + "(dir)");
+                log.info(Utils.getSpaces(depth * 2) + file.getName() + "(dir)");
                 dirHashesCurrDepth.add(dirTraverse(file, depth + 1, dirHashes));
             }
 
@@ -268,7 +268,7 @@ public class FileSysTreeCrawler {
                                     .substring(treeRootPrefixLen)));
                     dirHashesCurrDepth.add(fileHash, new Path(file.getPath()
                             .substring(treeRootPrefixLen)));
-                    log.info(Tools.getSpaces(depth * 2) + file.getName()
+                    log.info(Utils.getSpaces(depth * 2) + file.getName()
                             + "  (MD5:" + fileHash + ")");
                 } catch (IOException e) {
                     log.error(
@@ -293,7 +293,7 @@ public class FileSysTreeCrawler {
 
         // add all hashes of the directory to the hash store
         hashStore.addAll(dirHashes);
-        log.info((Tools.getSpaces(depth * 2) + folder.getName()
+        log.info((Utils.getSpaces(depth * 2) + folder.getName()
                 + "  (folder MD5:" + folderHash + ")"));
 
         return folderFileHash;

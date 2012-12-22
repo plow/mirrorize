@@ -71,12 +71,12 @@ public class DirDiffAnalyzer<T extends Comparable<T>> {
         }
         // get all files in their map without corresponding path in our map (by
         // path)
-        HashedFileSet<T> nonCorrespFilesByPath = getSetOfPth(theirMap,
-                ourMap, SetType.DIFF);
+        HashedFileSet<T> nonCorrespFilesByPath = getSetOfPth(theirMap, ourMap,
+                SetType.DIFF);
 
         // get all files in their map without corresponding hash in our map
-        HashedFileSet<T> nonCorrespFilesByHash = getSetOfHsh(theirMap,
-                ourMap, SetType.DIFF, false);
+        HashedFileSet<T> nonCorrespFilesByHash = getSetOfHsh(theirMap, ourMap,
+                SetType.DIFF, false);
 
         // return set with those files having neither a corresponding path nor a
         // corresponding hash in our map

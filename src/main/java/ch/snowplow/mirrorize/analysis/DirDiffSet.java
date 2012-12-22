@@ -29,6 +29,7 @@ public class DirDiffSet<T extends Comparable<T>> extends TreeSet<HashedFile<T>> 
             // strBuf.append(Tools.getSpaces(fileHash.getPath().getDepth() * 2))
             // .append(fileHash.getPath().getName()).append("\n");
 
+            // TODO use string builder instead of string buffer
             strBuf.append(fileHash.getPath().getPath());
             if (fileHash instanceof HashedFileRelat) {
                 strBuf.append(" -> ").append(

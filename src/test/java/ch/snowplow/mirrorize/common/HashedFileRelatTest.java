@@ -11,36 +11,36 @@ import ch.snowplow.mirrorize.testdata.builders.HashedFileBuilder;
 import ch.snowplow.mirrorize.testdata.builders.HashedFileRelatBuilder;
 import ch.snowplow.mirrorize.testdata.builders.PathSetBuilder;
 
-public class HashedFileCorrespTest extends TestCase {
+public class HashedFileRelatTest extends TestCase {
 
     public void testGetPath() {
-        for (HashedFileRelatStringTestData fileHashStrTD : HashedFileRelatStringTestData
+        for (HashedFileRelatStringTestData hashFileRelatStrTD : HashedFileRelatStringTestData
                 .values()) {
-            assertEquals(fileHashStrTD.getPath(), fileHashStrTD
+            assertEquals(hashFileRelatStrTD.getPath(), hashFileRelatStrTD
                     .getHashedFileRelat().getPath());
         }
     }
 
     public void testGetPathCorresp() {
-        for (HashedFileRelatStringTestData fileHashStrTD : HashedFileRelatStringTestData
+        for (HashedFileRelatStringTestData hashedFileRelatStrTD : HashedFileRelatStringTestData
                 .values()) {
             assertEquals(
                     new PathSetBuilder()
-                            .addPaths(fileHashStrTD.getRelatPaths()).build(),
-                    fileHashStrTD.getHashedFileRelat().getRelatedPaths());
+                            .addPaths(hashedFileRelatStrTD.getRelatPaths()).build(),
+                    hashedFileRelatStrTD.getHashedFileRelat().getRelatedPaths());
         }
     }
 
     public void testGetHash() {
-        for (HashedFileStringTestData fileHashStrTD : HashedFileStringTestData
+        for (HashedFileStringTestData hashedFileRelatStrTD : HashedFileStringTestData
                 .values()) {
-            assertEquals(fileHashStrTD.getHash(), fileHashStrTD.getFileHash()
+            assertEquals(hashedFileRelatStrTD.getHash(), hashedFileRelatStrTD.getFileHash()
                     .getHash());
         }
     }
 
     public void testCompareTo() {
-        List<HashedFileRelat<String>> fileHashes = Arrays
+        List<HashedFileRelat<String>> hashedFileRelats = Arrays
                 .asList(HashedFileRelatStringTestData.FILEHASH_LESS1
                         .getHashedFileRelat(),
                         HashedFileRelatStringTestData.FILEHASH_LESS0
@@ -53,7 +53,7 @@ public class HashedFileCorrespTest extends TestCase {
                                 .getHashedFileRelat(),
                         HashedFileRelatStringTestData.FILEHASH_MORE2
                                 .getHashedFileRelat());
-        Iterator<HashedFileRelat<String>> it = fileHashes.iterator();
+        Iterator<HashedFileRelat<String>> it = hashedFileRelats.iterator();
         HashedFileRelat<String> smaller = it.next();
         HashedFileRelat<String> larger = it.next();
         while (it.hasNext()) {

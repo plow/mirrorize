@@ -70,7 +70,120 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
 
     // TODO case: dirs with same hash (same files) but different paths inside
 
-    public void testGetDiffsOfHashes() {
+    // TODO also test getSetOfPathsC(SetType.CORRESP) here
+
+    public void testGetNewFiles() {
+        // a/file_a2.txt
+        // c
+        // c/file_c1.txt
+        // c_dir
+        // c_dir/file_c1d.txt
+        // c_dir/file_c2d.txt
+
+        HashedFileSet<String> newFiles = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getNewFiles();
+        assertAllContained(newFiles, "a/file_a2.txt", "c", "c/file_c1.txt",
+                "c_dir", "c_dir/file_c1d.txt", "c_dir/file_c2d.txt");
+    }
+
+    public void testGetDeletedFiles() {
+        // a/file_a3.txt
+        // d
+        // d/file_d1.txt
+        // d_dir
+        // d_dir/file_d1d.txt
+        // d_dir/file_d2d.txt
+
+        HashedFileSet<String> delFiles = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getDeletedFiles();
+        assertAllContained(delFiles, "a/file_a3.txt", "d", "d/file_d1.txt",
+                "d_dir", "d_dir/file_d1d.txt", "d_dir/file_d2d.txt");
+    }
+
+    // TODO also test getSetOfPathsC(SetType.CORRESP) here
+
+    public void testGetModifiedFiles() {
+        // a
+        // a/file_a5.txt
+        // f
+        // f/file_f.txt
+        // f_dir
+        // f_dir/file_f1d.txt
+        // f_dir/file_f2d.txt
+        // h
+        // h/h1
+        // h/h2
+        // h/h3
+        // h/h4
+        // h/h5
+        // h/h6
+        // h/h7
+        // h/h7/file_h71.txt
+
+        HashedFileSet<String> modFiles = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getModifiedFiles();
+        assertAllContained(modFiles, "a", "a/file_a5.txt", "f", "f/file_f.txt",
+                "f_dir", "f_dir/file_f1d.txt", "f_dir/file_f2d.txt", "h",
+                "h/h1", "h/h2", "h/h3", "h/h4", "h/h5", "h/h6", "h/h7",
+                "h/h7/file_h71.txt");
+    }
+
+    // TODO also test getSetOfPathsC(SetType.CORRESP) here
+
+    public void testGetMovedFiles() {
+        // a/file_a4_1.txt -> [PathSet: a/file_a4_2.txt]
+        // e/file_e1.txt -> [PathSet: e/file_e2.txt]
+        // e_dir1 -> [PathSet: e_dir2]
+        // e_dir1/file_e1d.txt -> [PathSet: e_dir2/file_e1d.txt]
+        // e_dir1/file_e2d.txt -> [PathSet: e_dir2/file_e2d.txt]
+        // h/h1/file_h11.txt -> [PathSet: h/h1/file_h12.txt | h/h1/file_h13.txt]
+        // h/h3/file_h31.txt -> [PathSet: h/h3/file_h33.txt]
+        // h/h3/file_h32.txt -> [PathSet: h/h3/file_h33.txt]
+        // h/h7/file_h71.txt -> [PathSet: h/h7/file_h72.txt]
+
+        HashedFileSet<String> movFiles = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getMovedFiles();
+        String movedFilePaths[] = { "a/file_a4_1.txt", "e/file_e1.txt",
+                "e_dir1", "e_dir1/file_e1d.txt", "e_dir1/file_e2d.txt",
+                "h/h1/file_h11.txt", "h/h3/file_h31.txt", "h/h3/file_h32.txt",
+                "h/h7/file_h71.txt" };
+        String movedFilePathsCorresp[][] = { { "a/file_a4_2.txt" },
+                { "e/file_e2.txt" }, { "e_dir2" }, { "e_dir2/file_e1d.txt" },
+                { "e_dir2/file_e2d.txt" },
+                { "h/h1/file_h12.txt", "h/h1/file_h13.txt" },
+                { "h/h3/file_h33.txt" }, { "h/h3/file_h33.txt" },
+                { "h/h7/file_h72.txt" } };
+        assertAllContained(movFiles, movedFilePaths);
+        for (int i = 0; i < movedFilePaths.length; i++) {
+            movFiles.contains(new HashedFileRelatBuilder<String>("")
+                    .withPath(movedFilePaths[i])
+                    .withRelatedPaths(movedFilePathsCorresp[i]).build());
+        }
+    }
+
+    // TODO also test getSetOfPathsC(SetType.CORRESP) here
+
+    public void testGetAllFiles() {
+        HashedFileSet<String> allFiles = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getAllFiles();
+
+        // 50 is retrieved with bash command `find . | wc -l`
+        assertEquals(50, allFiles.size());
+    }
+
+    public void testGetSetOfHashes() {
+        HashedFileSet<String> hashesCorresp = new DirDiffAnalyzer<String>(
+                ourMap, theirMap).getSetOfHashes(SetType.CORRESP);
+        HashedFileSet<String> hashesDiff = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getSetOfHashes(SetType.DIFF);
+        assertEquals(ourMap.getFileHashSet().size(), hashesCorresp.size()
+                + hashesDiff.size());
+        // assert that the sets are mutual exclusive
+        assertFalse(hashesCorresp.removeAll(hashesDiff));
+        assertFalse(hashesDiff.removeAll(hashesCorresp));
+    }
+
+    public void testSetOfHashesDiff() {
         // (root)
         // a
         // a/file_a2.txt
@@ -104,7 +217,7 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
                 "h/h5", "h/h6", "h/h7");
     }
 
-    public void testGetCorrespsOfHashes() {
+    public void testGetSetOfHashesCorresp() {
         // a/file_a1.txt
         // a/file_a4_1.txt
         // b
@@ -148,9 +261,51 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
                 "h/h6/file_h63.txt", "h/h6/file_h64.txt", "h/h7/file_h71.txt");
     }
 
-    // TODO also test getSetOfHashesC(SetType.CORRESP) here
+    public void testGetSetOfPathsCorresp() {
+        // a
+        // a/file_a1.txt
+        // a/file_a5.txt
+        // b
+        // b/file_b1.txt
+        // b_dir
+        // b_dir/file_b1d.txt
+        // b_dir/file_b2d.txt
+        // e
+        // f
+        // f/file_f.txt
+        // f_dir
+        // f_dir/file_f1d.txt
+        // f_dir/file_f2d.txt
+        // g
+        // g/file_g1.txt
+        // g/file_g2.txt
+        // h
+        // h/h1
+        // h/h2
+        // h/h2/file_h21.txt
+        // h/h3
+        // h/h4
+        // h/h4/file_h41.txt
+        // h/h5
+        // h/h5/file_h51.txt
+        // h/h6
+        // h/h6/file_h61.txt
+        // h/h7
+        // h/h7/file_h71.txt
 
-    public void testGetDiffsOfPaths() {
+        HashedFileSet<String> pathCorresp = new DirDiffAnalyzer<String>(ourMap,
+                theirMap).getSetOfPaths(SetType.CORRESP);
+        assertAllContained(pathCorresp, "", "a", "a/file_a1.txt",
+                "a/file_a5.txt", "b", "b/file_b1.txt", "b_dir",
+                "b_dir/file_b1d.txt", "b_dir/file_b2d.txt", "e", "f",
+                "f/file_f.txt", "f_dir", "f_dir/file_f1d.txt",
+                "f_dir/file_f2d.txt", "g", "g/file_g1.txt", "g/file_g2.txt",
+                "h", "h/h1", "h/h2", "h/h2/file_h21.txt", "h/h3", "h/h4",
+                "h/h4/file_h41.txt", "h/h5", "h/h5/file_h51.txt", "h/h6",
+                "h/h6/file_h61.txt", "h/h7", "h/h7/file_h71.txt");
+    }
+
+    public void testGetSetOfPathsDiff() {
         // a/file_a2.txt
         // a/file_a4_1.txt
         // c
@@ -183,99 +338,6 @@ public class DirDiffAnalyzerTest extends FileSysTestCase {
     }
 
     // TODO also test getSetOfPathsC(SetType.CORRESP) here
-
-    public void testGetNewFiles() {
-        // a/file_a2.txt
-        // c
-        // c/file_c1.txt
-        // c_dir
-        // c_dir/file_c1d.txt
-        // c_dir/file_c2d.txt
-
-        HashedFileSet<String> newFiles = new DirDiffAnalyzer<String>(ourMap,
-                theirMap).getNewFiles();
-        assertAllContained(newFiles, "a/file_a2.txt", "c", "c/file_c1.txt",
-                "c_dir", "c_dir/file_c1d.txt", "c_dir/file_c2d.txt");
-    }
-
-    public void testGetModifiedFiles() {
-        // a
-        // a/file_a5.txt
-        // f
-        // f/file_f.txt
-        // f_dir
-        // f_dir/file_f1d.txt
-        // f_dir/file_f2d.txt
-        // h
-        // h/h1
-        // h/h2
-        // h/h3
-        // h/h4
-        // h/h5
-        // h/h6
-        // h/h7
-        // h/h7/file_h71.txt
-
-        HashedFileSet<String> modFiles = new DirDiffAnalyzer<String>(ourMap,
-                theirMap).getModifiedFiles();
-        assertAllContained(modFiles, "a", "a/file_a5.txt", "f", "f/file_f.txt",
-                "f_dir", "f_dir/file_f1d.txt", "f_dir/file_f2d.txt", "h",
-                "h/h1", "h/h2", "h/h3", "h/h4", "h/h5", "h/h6", "h/h7",
-                "h/h7/file_h71.txt");
-    }
-
-    public void testGetMovedFiles() {
-        // a/file_a4_1.txt -> [PathSet: a/file_a4_2.txt]
-        // e/file_e1.txt -> [PathSet: e/file_e2.txt]
-        // e_dir1 -> [PathSet: e_dir2]
-        // e_dir1/file_e1d.txt -> [PathSet: e_dir2/file_e1d.txt]
-        // e_dir1/file_e2d.txt -> [PathSet: e_dir2/file_e2d.txt]
-        // h/h1/file_h11.txt -> [PathSet: h/h1/file_h12.txt | h/h1/file_h13.txt]
-        // h/h3/file_h31.txt -> [PathSet: h/h3/file_h33.txt]
-        // h/h3/file_h32.txt -> [PathSet: h/h3/file_h33.txt]
-        // h/h7/file_h71.txt -> [PathSet: h/h7/file_h72.txt]
-
-        HashedFileSet<String> movFiles = new DirDiffAnalyzer<String>(ourMap,
-                theirMap).getMovedFiles();
-        String movedFilePaths[] = { "a/file_a4_1.txt", "e/file_e1.txt",
-                "e_dir1", "e_dir1/file_e1d.txt", "e_dir1/file_e2d.txt",
-                "h/h1/file_h11.txt", "h/h3/file_h31.txt", "h/h3/file_h32.txt",
-                "h/h7/file_h71.txt" };
-        String movedFilePathsCorresp[][] = { { "a/file_a4_2.txt" },
-                { "e/file_e2.txt" }, { "e_dir2" }, { "e_dir2/file_e1d.txt" },
-                { "e_dir2/file_e2d.txt" },
-                { "h/h1/file_h12.txt", "h/h1/file_h13.txt" },
-                { "h/h3/file_h33.txt" }, { "h/h3/file_h33.txt" },
-                { "h/h7/file_h72.txt" } };
-        assertAllContained(movFiles, movedFilePaths);
-        for (int i = 0; i < movedFilePaths.length; i++) {
-            movFiles.contains(new HashedFileRelatBuilder<String>("")
-                    .withPath(movedFilePaths[i])
-                    .withRelatedPaths(movedFilePathsCorresp[i]).build());
-        }
-    }
-
-    public void testGetDeletedFiles() {
-        // a/file_a3.txt
-        // d
-        // d/file_d1.txt
-        // d_dir
-        // d_dir/file_d1d.txt
-        // d_dir/file_d2d.txt
-
-        HashedFileSet<String> delFiles = new DirDiffAnalyzer<String>(ourMap,
-                theirMap).getDeletedFiles();
-        assertAllContained(delFiles, "a/file_a3.txt", "d", "d/file_d1.txt",
-                "d_dir", "d_dir/file_d1d.txt", "d_dir/file_d2d.txt");
-    }
-
-    public void testGetAllFiles() {
-        HashedFileSet<String> allFiles = new DirDiffAnalyzer<String>(ourMap,
-                theirMap).getAllFiles();
-
-        // 50 is retrieved with bash command `find . | wc -l`
-        assertEquals(50, allFiles.size());
-    }
 
     private void assertAllContained(HashedFileSet<String> fileHashes,
             String... filePaths) {

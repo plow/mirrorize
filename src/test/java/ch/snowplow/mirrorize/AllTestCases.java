@@ -4,13 +4,13 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import ch.snowplow.mirrorize.analysis.DirDiffAnalyzerTest;
 import ch.snowplow.mirrorize.common.DirHashMapTest;
-import ch.snowplow.mirrorize.common.HashedFileCorrespTest;
+import ch.snowplow.mirrorize.common.HashedFileRelatTest;
 import ch.snowplow.mirrorize.common.HashedFileSetTest;
 import ch.snowplow.mirrorize.common.HashedFileTest;
 import ch.snowplow.mirrorize.common.PathSetTest;
 import ch.snowplow.mirrorize.common.PathTest;
 import ch.snowplow.mirrorize.common.TestDirHashMap;
-import ch.snowplow.mirrorize.common.ToolsTest;
+import ch.snowplow.mirrorize.common.UtilsTest;
 import ch.snowplow.mirrorize.gathering.FileSysTreeCrawlerTest;
 
 public final class AllTestCases extends TestCase {
@@ -30,13 +30,13 @@ public final class AllTestCases extends TestCase {
 
         // ch.snowplow.mirrorize.common
         suite.addTestSuite(DirHashMapTest.class);
-        suite.addTestSuite(HashedFileCorrespTest.class);
+        suite.addTestSuite(HashedFileRelatTest.class);
         suite.addTestSuite(HashedFileSetTest.class);
         suite.addTestSuite(HashedFileTest.class);
         suite.addTestSuite(PathSetTest.class);
         suite.addTestSuite(PathTest.class);
         suite.addTestSuite(TestDirHashMap.class);
-        suite.addTestSuite(ToolsTest.class);
+        suite.addTestSuite(UtilsTest.class);
 
         // ch.snowplow.mirrorize.gathering
         suite.addTestSuite(FileSysTreeCrawlerTest.class);

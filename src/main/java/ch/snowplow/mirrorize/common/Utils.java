@@ -6,13 +6,13 @@ package ch.snowplow.mirrorize.common;
  * @author sf
  * 
  */
-public final class Tools {
+public final class Utils {
 
     /**
      * Private empty constructor in order to prevent instantiation of this
      * utility class.
      */
-    private Tools() {
+    private Utils() {
     }
 
     /**

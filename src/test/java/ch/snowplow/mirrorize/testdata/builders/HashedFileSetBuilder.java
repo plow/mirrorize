@@ -11,7 +11,7 @@ public class HashedFileSetBuilder<T extends Comparable<T>> implements
 
     Set<HashedFile<T>> fileHashes = new HashSet<HashedFile<T>>();
 
-    public HashedFileSetBuilder<T> addFileHash(HashedFile<T> fh) {
+    public HashedFileSetBuilder<T> addHashedFile(HashedFile<T> fh) {
         this.fileHashes.add(fh);
         return this;
     }
